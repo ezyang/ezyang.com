@@ -1,0 +1,19 @@
+
+# For http://www.thewritingpot.com/ only
+
+DirectoryIndex index.php index.html index.update.html
+
+<Files ~ "^thewritingpot\.zip$">
+  Deny from all
+</Files>
+
+# Uncomment these lines before uploading to server
+# See htaccess.txt for more details
+
+# Required to trigger ICDSoft's hosting
+AddHandler application/x-httpd-php5 .php
+
+Options +FollowSymLinks
+RewriteEngine on
+RewriteCond %{HTTP_HOST} ^thewritingpot.com [NC]
+RewriteRule ^(.*)$ http://www.thewritingpot.com/$1 [L,R=301]
