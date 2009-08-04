@@ -15,5 +15,5 @@ AddHandler application/x-httpd-php5 .php
 
 Options +FollowSymLinks
 RewriteEngine on
-RewriteCond %{HTTP_HOST} ^thewritingpot.com [NC]
-RewriteRule ^(.*)$ http://www.thewritingpot.com/$1 [L,R=301]
+RewriteCond %{HTTP_HOST} ^(www\.)?thewritingpot.com [NC]
+RewriteRule ^(.*)$ http://ezyang.com/$1 [L,R=301]
