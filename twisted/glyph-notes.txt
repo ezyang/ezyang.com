@@ -1,0 +1,21 @@
+Definition of asynchronous and synchronous
+Explanation of higher order functions
+Network programming and select()
+No magical interaction
+http://stackoverflow.com/questions/80617/asychronous-programming-in-python-twisted
+Bulleted lists suck
+Don't say it's simple
+Too many examples, give a thoroughly-explained toy example
+
+The modules:
+* High-level functions
+    - Lambda lambda lambda
+* Why asynchronous?
+    - Define synchronous and asynchronous
+    - Multiplexing IO
+    - Introduce a simple reactor based on select()
+* Why callbacks?
+    - Asynchronous interaction to synchronous interaction
+    - Delocalized execution (the parser example)
+* Why deferred?
+    - Ad hoc callback params versus Deferred objects

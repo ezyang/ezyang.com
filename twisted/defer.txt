@@ -1,0 +1,102 @@
+== Old Stuff ==
+
+Asynchronous Programming with Twisted
+# Introduction to concurrent programming
+    * Waiting for answers
+    * Not waiting on data
+    * Non-blocking calls
+    * Callbacks
+# Deferreds
+# The Problem that Deferreds Solve
+# Deferreds - a signal that data is yet to come
+    * Callbacks
+    * Error handling: errbacks
+
+Deferred Reference
+# Callbacks
+    * Multiple callbacks
+    * Visual Explanation
+# Errbacks
+    * Unhandled Errors
+# Handling either synchronous or asynchronous results
+    * Handling possible Deferreds in the library code
+# DeferredList
+    * Other behaviours
+# Class Overview
+    * Basic Callback Functions
+    * Chaining Deferreds
+
+== API ==
+
+class AlreadyCalledError(Exception)
+class TimeoutError(Exception)
+def succeed(result)
+def fail(result=None)
+def execute(callable, *args, **kw)
+def maybeDeferred(f, *args, **kw)
+def timeout(deferred)
+class Deferred
+    def addCallbacks(self, callback, errback=None,
+                     callbackArgs=None, callbackKeywords=None,
+                     errbackArgs=None, errbackKeywords=None)
+    def addCallback(self, callback, *args, **kw)
+    def addErrback(self, errback, *args, **kw)
+    def addBoth(self, callback, *args, **kw)
+    def chainDeferred(self, d):
+        return self.addCallbacks(d.callback, d.errback)
+    def callback(self, result)
+    def errback(self, fail=None)
+    def setTimeout(self, seconds, timeoutFunc=timeout, *args, **kw)
+class FirstError(Exception)
+class DeferredList(Deferred)
+    def __init__(self, deferredList, fireOnOneCallback=0, fireOnOneErrback=0,
+                 consumeErrors=0)
+def gatherResults(deferredList) # dunno what this does
+
+SUCCESS
+FAILURE
+
+== Deferred async primitives ==
+
+class DeferredLock(_ConcurrencyPrimitive)
+    def acquire(self)
+    def release(self)
+class DeferredSemaphore(_ConcurrencyPrimitive)
+    def __init__(self, tokens)
+    def acquire(self)
+    def release(self)
+
+class QueueOverflow(Exception)
+class QueueUnderflow(Exception)
+class DeferredQueue(object)
+    def put(self, obj)
+    def get(self)
+
+class AlreadyTryingToLockError
+class DeferredFilesystemLock # dunno what this does
+
+== Sugar ==
+
+# yield style sugaring
+class waitForDeferred
+def deferredGenerator(f) # decorator
+
+# even more amazing yield style sugaring
+def inlineCallbacks # decorator
+
+== Outline ==
+
+# Synchronous to Asynchronous: The Method to the Madness
+    - Convert synchronous code to asynchronous code
+    - Why asynchronous?
+# Deferred
+    - Basic operation
+    - Convenience primitives (succeed, fail, execute, maybeDeferred)
+    - Callback/Errback chaining
+    - Timeouts
+# Composing deferreds
+    - DeferredList/gatherResults
+    - chainDeferred
+# Advanced topics
+    - Deferred asynchronous primitives
+    - Sugar syntax

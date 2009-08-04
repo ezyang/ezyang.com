@@ -1,0 +1,605 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html  PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN'  'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'><html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+<title>Twisted Documentation: Guide to twisted.internet.defer</title>
+<link href="stylesheet.css" rel="stylesheet" type="text/css"/>
+  </head>
+
+  <body bgcolor="white">
+    <h1 class="title">Guide to twisted.internet.defer</h1>
+    <div class="toc"><ol><li><a href="#auto0">Deferreds standardize callbacks</a></li><li><a href="#auto1">Deferred</a></li><ul><li><a href="#auto2">Callbacks</a></li><li><a href="#auto3">Errbacks</a></li><li><a href="#auto4">Callbacks and errbacks</a></li><li><a href="#auto5">Chaining callbacks</a></li></ul></ol></div>
+    <div class="content">
+
+<span/>
+
+<p>This document addresses Twisted's
+implementation of Deferred objects in
+<code class="API"><a href="twisted.internet.defer.Deferred" title="twisted.internet.defer.Deferred">twisted.internet.defer.Deferred</a></code>.  It
+assumes familiarity with the basics of event loops and
+asynchronous programming.</p>
+
+<h2>Deferreds standardize callbacks<a name="auto0"/></h2>
+
+<p>Callbacks are the lingua franca of asynchronous programming:
+any time you need to process the result of a non-blocking operation,
+you give that operation a callback for it to call when it has
+finished processing and has a result for you.</p>
+
+<p>If you were implementing an asynchronous function from scratch,
+you might be tempted to define it like this:</p>
+
+<pre class="python"><p class="py-linenumber">1
+2
+</p><span class="py-src-keyword">def</span> <span class="py-src-identifier">nonblocking_call</span>(<span class="py-src-parameter">input</span>, <span class="py-src-parameter">on_success</span>, <span class="py-src-parameter">on_error</span>):
+    <span class="py-src-keyword">pass</span>
+</pre>
+
+<p>The person using this code, then, would pass the functions he
+wanted called to this function at call time, like this:</p>
+
+<pre class="python"><p class="py-linenumber">1
+2
+3
+4
+5
+</p><span class="py-src-keyword">def</span> <span class="py-src-identifier">success_handler</span>(<span class="py-src-parameter">result</span>):
+    <span class="py-src-keyword">print</span> <span class="py-src-string">&quot;Success: %s&quot;</span> % <span class="py-src-variable">result</span>
+<span class="py-src-keyword">def</span> <span class="py-src-identifier">error_handler</span>(<span class="py-src-parameter">error</span>):
+    <span class="py-src-keyword">print</span> <span class="py-src-string">&quot;Failure: %s&quot;</span> % <span class="py-src-variable">str</span>(<span class="py-src-variable">error</span>)
+<span class="py-src-variable">nonblocking_call</span>(<span class="py-src-string">&quot;input&quot;</span>, <span class="py-src-variable">success_handler</span>, <span class="py-src-variable">error_handler</span>)
+</pre>
+
+<p>This works quite well for many simple cases, where you only
+need one success handler and one error handler, and the nonblocking
+call is a relatively one off function.</p>
+
+<p>But what if you are Twisted and you have many nonblocking functions:
+do you force every one of these functions to have a <code>on_success</code>
+and <code>on_error</code>
+parameter?  What if you want to perform a calculation on the result
+of the <code>success_handler</code>: do you write all of the code into a bigger
+<code>success_handler</code> and increase the indentation?</p>
+
+<p>Twisted's elegant solution to this problem is Deferreds.  Since
+the nonblocking call doesn't have a meaningful return value anyway (remember,
+it's asynchronous; it can return before it has a result), we return
+a Deferred which you can attach callbacks to.</p>
+
+<pre class="python"><p class="py-linenumber">1
+2
+3
+</p><span class="py-src-variable">defer</span> = <span class="py-src-variable">nonblocking_call</span>(<span class="py-src-string">&quot;input&quot;</span>)
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">success_handler</span>)
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">error_handler</span>)
+</pre>
+
+<p>The Deferred object doesn't do anything that you couldn't have done
+with the two callback parameters.  This point is worth repeating: Deferred
+is an abstraction over callback parameters: it does nothing magical
+and is not, itself, asynchronous.  It is a merely a standard:
+if a function returns a Deferred,
+you <em>know</em> that you are dealing with an asynchronous function,
+and you know exactly what its API for adding callbacks is.</p>
+
+<h2>Deferred<a name="auto1"/></h2>
+
+<h3>Callbacks<a name="auto2"/></h3>
+
+<p>At its very simplest, the Deferred has a single callback attached to it, which
+gets invoked with the result as an argument when it becomes available:</p>
+
+<table class="compare">
+    <tr>
+        <th colspan="1" rowspan="1">Synchronous</th>
+        <th colspan="1" rowspan="1">Asynchronous</th>
+    </tr>
+    <tr>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+</p><span class="py-src-variable">value</span> = <span class="py-src-variable">synchronous_operation</span>()
+<span class="py-src-variable">process</span>(<span class="py-src-variable">value</span>)
+</pre></td>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+</p><span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">process</span>)
+</pre></td>
+    </tr>
+</table>
+
+<h3>Errbacks<a name="auto3"/></h3>
+
+<p>Error handling is an ever present concern in synchronous code.  Deferred
+implements a system of <strong>errbacks</strong> in order to simulate Python
+try/except blocks.  Just like in synchronous code, you <em>always</em> should
+register an errback in order to deal with an error gracefully.</p>
+
+<table class="compare">
+    <tr>
+        <th colspan="1" rowspan="1">Synchronous</th>
+        <th colspan="1" rowspan="1">Asynchronous</th>
+    </tr>
+    <tr>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+3
+4
+</p><span class="py-src-keyword">try</span>:
+    <span class="py-src-variable">synchronous_operation</span>()
+<span class="py-src-keyword">except</span> <span class="py-src-variable">UserError</span> <span class="py-src-keyword">as</span> <span class="py-src-variable">e</span>:
+    <span class="py-src-variable">handle_error</span>(<span class="py-src-variable">e</span>)
+</pre></td>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+3
+4
+5
+</p><span class="py-src-keyword">def</span> <span class="py-src-identifier">handle_twisted_error</span>(<span class="py-src-parameter">failure</span>):
+    <span class="py-src-variable">e</span> = <span class="py-src-variable">failure</span>.<span class="py-src-variable">trap</span>(<span class="py-src-variable">UserError</span>)
+    <span class="py-src-variable">handle_error</span>(<span class="py-src-variable">e</span>)
+<span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_error</span>)
+</pre></td>
+    </tr>
+</table>
+
+<p>There are plenty of things going on here:</p>
+
+<ul>
+    <li>Instead of being passed an exception object, which is roughly
+    analogous to the result in the no error case, you are passed a
+    <code>twisted.python.failure.Failure</code> object.  This is roughly
+    a wrapper around the standard <code>Exception</code> with a few
+    crucial enhancements to make it useful in an asynchronous context.</li>
+
+    <li>Consequently, we pull out the real exception by using
+    <code>failure.trap(UserError)</code>.  This is the userland implementation
+    of <code>except</code>; if the exception is not trapped, it gets
+    re-thrown and our errback is bypassed.  </li>
+
+    <li>You can trap multiple types of exceptions by simply calling trap
+    with multiple arguments, e.g. <code>failure.trap(UserError, OtherUserError)</code></li>
+</ul>
+
+<p>Omitting the trap declaration is equivalent to a catch-all
+except block:</p>
+
+<table class="compare">
+    <tr>
+        <th colspan="1" rowspan="1">Synchronous</th>
+        <th colspan="1" rowspan="1">Asynchronous</th>
+    </tr>
+    <tr>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+3
+4
+5
+</p><span class="py-src-keyword">try</span>:
+    <span class="py-src-variable">synchronous_operation</span>()
+<span class="py-src-keyword">except</span>:
+    <span class="py-src-variable">handle_error</span>()
+    <span class="py-src-keyword">raise</span>
+</pre></td>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+3
+4
+5
+</p><span class="py-src-keyword">def</span> <span class="py-src-identifier">handle_twisted_error</span>(<span class="py-src-parameter">failure</span>):
+    <span class="py-src-variable">handle_error</span>()
+    <span class="py-src-keyword">return</span> <span class="py-src-variable">failure</span>
+<span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_error</span>)
+</pre></td>
+    </tr>
+</table>
+
+<p>Notice that in order to re-raise the exception, we simply
+return it from our errback handler.  Deferred will notice that it
+is the type of a failure object, and act accordingly.
+You can <em>also</em> throw an exception and Deferred will
+handle it properly:</p>
+
+<pre class="python"><p class="py-linenumber">1
+2
+3
+4
+5
+6
+</p><span class="py-src-keyword">def</span> <span class="py-src-identifier">handle_twisted_error</span>(<span class="py-src-parameter">failure</span>):
+    <span class="py-src-variable">status</span> = <span class="py-src-variable">handle_error</span>(<span class="py-src-variable">failure</span>.<span class="py-src-variable">value</span>)
+    <span class="py-src-keyword">if</span> <span class="py-src-keyword">not</span> <span class="py-src-variable">status</span>:
+        <span class="py-src-keyword">raise</span> <span class="py-src-variable">UserError</span>
+<span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_error</span>)
+</pre>
+
+<p>If you would like to re-raise the original error, it is preferred to use
+<code>failure.raiseException()</code>, which preserves traceback information
+if available.</p>
+
+<p>Failure has another convenience function, <code>check()</code>, which
+makes it easier to simulate multiple <code>except</code> blocks:</p>
+
+<table class="compare">
+    <tr>
+        <th colspan="1" rowspan="1">Synchronous</th>
+        <th colspan="1" rowspan="1">Asynchronous</th>
+    </tr>
+    <tr>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+3
+4
+5
+6
+</p><span class="py-src-keyword">try</span>:
+    <span class="py-src-variable">synchronous_operation</span>()
+<span class="py-src-keyword">except</span> <span class="py-src-variable">UserError</span>:
+    <span class="py-src-variable">handle_error</span>()
+<span class="py-src-keyword">except</span> <span class="py-src-variable">AnotherUserError</span>:
+    <span class="py-src-variable">handler_another_error</span>()
+</pre></td>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+3
+4
+5
+6
+7
+8
+9
+</p><span class="py-src-keyword">def</span> <span class="py-src-identifier">handle_twisted_error</span>(<span class="py-src-parameter">failure</span>):
+    <span class="py-src-keyword">if</span> <span class="py-src-variable">failure</span>.<span class="py-src-variable">check</span>(<span class="py-src-variable">UserError</span>):
+        <span class="py-src-variable">handle_error</span>()
+    <span class="py-src-keyword">elif</span> <span class="py-src-variable">failure</span>.<span class="py-src-variable">check</span>(<span class="py-src-variable">AnotherUserError</span>):
+        <span class="py-src-variable">handle_another_error</span>()
+    <span class="py-src-keyword">else</span>:
+        <span class="py-src-variable">failure</span>.<span class="py-src-variable">raiseException</span>()
+<span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_error</span>)
+</pre></td>
+    </tr>
+</table>
+
+<h3>Callbacks and errbacks<a name="auto4"/></h3>
+
+<p>In most cases, you'll want to perform some processing on the deferred
+result <em>as well</em> as have error handling.  As you may have guessed,
+this simply means you should define both a callback and an errback.</p>
+
+<table class="compare">
+    <tr>
+        <th colspan="1" rowspan="1">Synchronous</th>
+        <th colspan="1" rowspan="1">Asynchronous</th>
+    </tr>
+    <tr>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+3
+4
+5
+</p><span class="py-src-keyword">try</span>:
+    <span class="py-src-variable">value</span> = <span class="py-src-variable">synchronous_operation</span>()
+    <span class="py-src-variable">process</span>(<span class="py-src-variable">value</span>)
+<span class="py-src-keyword">except</span> <span class="py-src-variable">UserError</span> <span class="py-src-keyword">as</span> <span class="py-src-variable">e</span>:
+    <span class="py-src-variable">handle_error</span>(<span class="py-src-variable">e</span>)
+</pre></td>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+3
+4
+5
+6
+</p><span class="py-src-keyword">def</span> <span class="py-src-identifier">handle_twisted_error</span>(<span class="py-src-parameter">failure</span>):
+    <span class="py-src-variable">e</span> = <span class="py-src-variable">failure</span>.<span class="py-src-variable">trap</span>(<span class="py-src-variable">UserError</span>)
+    <span class="py-src-variable">handle_error</span>(<span class="py-src-variable">e</span>)
+<span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">process</span>)
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_error</span>)
+</pre></td>
+    </tr>
+</table>
+
+<p>Notice that in the synchronous version, <code>process</code>
+is <em>inside</em> the try..except block.  This translates over
+to the asynchronous code: if
+<code>process</code> throws an exception, <code>handle_twisted</code>
+will get a <code>Failure</code> object corresponding to that
+exception.  The errback could handle <em>either</em> an error
+from the asynchronous operation or from our callback.
+Why does this happen?  This is because
+Deferreds chain callbacks.</p>
+
+<h3>Chaining callbacks<a name="auto5"/></h3>
+
+<p>A common pattern in programs is the notion of one function
+returning an intermediate result, which gets passed to another
+function to calculate a further result, and so forth.  Such a
+chain of data processing entities is called a <em>pipeline</em>,
+and Deferreds are ideally suited for modeling them.</p>
+
+<table class="compare">
+    <tr>
+        <th colspan="1" rowspan="1">Synchronous</th>
+        <th colspan="1" rowspan="1">Asynchronous</th>
+    </tr>
+    <tr>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+3
+</p><span class="py-src-variable">value</span> = <span class="py-src-variable">synchronous_operation</span>()
+<span class="py-src-variable">value2</span> = <span class="py-src-variable">process</span>(<span class="py-src-variable">value</span>)
+<span class="py-src-variable">another_process</span>(<span class="py-src-variable">value2</span>) <span class="py-src-comment"># value2, not value!</span>
+</pre></td>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+3
+</p><span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">process</span>)
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">another_process</span>)
+</pre></td>
+    </tr>
+</table>
+
+<p>This behavior makes the name <code>addCallback</code>
+slightly misleading, since each of these
+callbacks will get a different result.  If you would like to multiplex
+(have multiple callbacks handle the same result), you should code
+this directly into your callback:</p>
+
+<table class="compare">
+    <tr>
+        <th colspan="1" rowspan="1">Synchronous</th>
+        <th colspan="1" rowspan="1">Asynchronous</th>
+    </tr>
+    <tr>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+3
+</p><span class="py-src-variable">value</span> = <span class="py-src-variable">synchronous_operation</span>()
+<span class="py-src-variable">process</span>(<span class="py-src-variable">value</span>)
+<span class="py-src-variable">another_process</span>(<span class="py-src-variable">value</span>)
+</pre></td>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+3
+4
+5
+</p><span class="py-src-keyword">def</span> <span class="py-src-identifier">multi_process</span>(<span class="py-src-parameter">value</span>):
+    <span class="py-src-variable">process</span>(<span class="py-src-variable">value</span>)
+    <span class="py-src-keyword">return</span> <span class="py-src-variable">another_process</span>(<span class="py-src-variable">value</span>)
+<span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">multi_process</span>)
+</pre></td>
+    </tr>
+</table>
+
+<p>Errbacks work similarly, but instead of pipelining values
+through multiple functions, they create nested try..except
+blocks:</p>
+
+<table class="compare">
+    <tr>
+        <th colspan="1" rowspan="1">Synchronous</th>
+        <th colspan="1" rowspan="1">Asynchronous</th>
+    </tr>
+    <tr>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+3
+4
+5
+6
+7
+</p><span class="py-src-keyword">try</span>:
+    <span class="py-src-keyword">try</span>:
+        <span class="py-src-variable">synchronous_operation</span>()
+    <span class="py-src-keyword">except</span> <span class="py-src-variable">UserError</span> <span class="py-src-keyword">as</span> <span class="py-src-variable">e</span>:
+        <span class="py-src-variable">handle_error</span>(<span class="py-src-variable">e</span>)
+<span class="py-src-keyword">except</span> <span class="py-src-variable">AnotherUserError</span> <span class="py-src-keyword">as</span> <span class="py-src-variable">e</span>:
+    <span class="py-src-variable">handle_another_error</span>(<span class="py-src-variable">e</span>)
+</pre></td>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+3
+4
+5
+6
+7
+8
+9
+</p><span class="py-src-keyword">def</span> <span class="py-src-identifier">handle_twisted_error</span>(<span class="py-src-parameter">failure</span>):
+    <span class="py-src-variable">e</span> = <span class="py-src-variable">failure</span>.<span class="py-src-variable">trap</span>(<span class="py-src-variable">UserError</span>)
+    <span class="py-src-variable">handle_error</span>(<span class="py-src-variable">e</span>)
+<span class="py-src-keyword">def</span> <span class="py-src-identifier">handle_twisted_another_error</span>(<span class="py-src-parameter">failure</span>):
+    <span class="py-src-variable">e</span> = <span class="py-src-variable">failure</span>.<span class="py-src-variable">trap</span>(<span class="py-src-variable">AnotherUserError</span>)
+    <span class="py-src-variable">handle_another_error</span>(<span class="py-src-variable">e</span>)
+<span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_error</span>)
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_another_error</span>)
+</pre></td>
+    </tr>
+</table>
+
+<p>Now, we can do tricky things with chaining callbacks and errbacks.
+The following code makes it possible for the errback function to gracefully
+provide the result of the computation, even though it failed (perhaps
+from a cache).</p>
+
+<table class="compare">
+    <tr>
+        <th colspan="1" rowspan="1">Synchronous</th>
+        <th colspan="1" rowspan="1">Asynchronous</th>
+    </tr>
+    <tr>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+3
+4
+5
+</p><span class="py-src-keyword">try</span>:
+    <span class="py-src-variable">value</span> = <span class="py-src-variable">synchronous_operation</span>()
+<span class="py-src-keyword">except</span> <span class="py-src-variable">UserError</span> <span class="py-src-keyword">as</span> <span class="py-src-variable">e</span>:
+    <span class="py-src-variable">value</span> = <span class="py-src-variable">handle_error</span>(<span class="py-src-variable">e</span>)
+<span class="py-src-variable">process</span>(<span class="py-src-variable">value</span>)
+</pre></td>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+3
+4
+5
+6
+</p><span class="py-src-keyword">def</span> <span class="py-src-identifier">handle_twisted_error</span>(<span class="py-src-parameter">failure</span>):
+    <span class="py-src-variable">e</span> = <span class="py-src-variable">failure</span>.<span class="py-src-variable">trap</span>(<span class="py-src-variable">UserError</span>)
+    <span class="py-src-keyword">return</span> <span class="py-src-variable">handle_error</span>(<span class="py-src-variable">e</span>)
+<span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_error</span>)
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">process</span>)
+</pre></td>
+    </tr>
+</table>
+
+<p>This code introduces a new function: <code>addCallbacks</code>, which
+adds both a callback and an errback.  Unlike adding them individually, if
+the callback errors, the errback will not receive the error, and if the
+errback returns a valid result, the callback will not receive it.  They
+are completely isolated from each other.</p>
+
+<table class="compare">
+    <tr>
+        <th colspan="1" rowspan="1">Synchronous</th>
+        <th colspan="1" rowspan="1">Asynchronous</th>
+    </tr>
+    <tr>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+3
+4
+5
+6
+</p><span class="py-src-keyword">try</span>:
+    <span class="py-src-variable">value</span> = <span class="py-src-variable">synchronous_operation</span>()
+<span class="py-src-keyword">except</span> <span class="py-src-variable">UserError</span> <span class="py-src-keyword">as</span> <span class="py-src-variable">e</span>:
+    <span class="py-src-variable">handle_error</span>(<span class="py-src-variable">e</span>)
+<span class="py-src-keyword">else</span>:
+    <span class="py-src-variable">process</span>(<span class="py-src-variable">value</span>)
+</pre></td>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+3
+4
+5
+</p><span class="py-src-keyword">def</span> <span class="py-src-identifier">handle_twisted_error</span>(<span class="py-src-parameter">failure</span>):
+    <span class="py-src-variable">e</span> = <span class="py-src-variable">failure</span>.<span class="py-src-variable">trap</span>(<span class="py-src-variable">UserError</span>)
+    <span class="py-src-variable">handle_error</span>(<span class="py-src-variable">e</span>)
+<span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallbacks</span>(<span class="py-src-variable">process</span>, <span class="py-src-variable">handle_twisted_error</span>)
+</pre></td>
+    </tr>
+</table>
+
+<p>Let's stick our hand inside the black box and see what actually is
+happening.  The order in which we add callbacks and errbacks is obviously
+influencing the end behavior.  Here's why:</p>
+
+<p>Internally, Deferred stores callbacks and errbacks in a list of
+callback/errback tuples.  When you call <code>addCallback</code>
+or <code>addErrback</code>, you are not adding a callback/errback
+to separate stacks; instead, Deferred wraps your callback into a
+tuple (substituting a &quot;pass through&quot; function for the missing
+callback/errback) and sticks this on the callback/errback tuple list.
+</p>
+
+<p>The result from the asynchronous function will either
+be a <code>Failure</code> object, or some
+other Python value.  If it is the former, Deferred will call
+your errback function in the tuple with the result; the latter will result
+in a call to the callback function in the tuple.  The function
+call itself can result in two end results, another failure (either
+by returning a Failure object or by raising an Exception) or
+a regular Python value.  Deferred will then move to the next
+tuple and repeat until there are no more tuples left.</p>
+
+<p>Take the following code as an example:</p>
+
+<pre class="python"><p class="py-linenumber">1
+2
+3
+4
+5
+</p><span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">callback1</span>) <span class="py-src-comment"># tuple 1</span>
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">callback2</span>) <span class="py-src-comment"># tuple 2</span>
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">errback3</span>) <span class="py-src-comment"># tuple 3</span>
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallbacks</span>(<span class="py-src-variable">callback4</span>, <span class="py-src-variable">errback4</span>) <span class="py-src-comment"># tuple 4</span>
+</pre>
+
+<p>Consider two possible scenarios.  First, success:</p>
+
+<ol>
+    <li>The asynchronous operation succeeds with a result of <code>&quot;Foo&quot;</code>.</li>
+    <li>No failure. We give <code>&quot;Foo&quot;</code> to the callback of tuple 1,
+    <code>callback1</code>.  It returns <code>(&quot;Foo&quot;, 123)</code>.</li>
+    <li>No failure. We give <code>(&quot;Foo&quot;, 123)</code> to the callback of tuple 2,
+    <code>callback2</code>.  It returns <code>&quot;Foo123&quot;</code>.</li>
+    <li>No failure. We give <code>&quot;Foo123&quot;</code> to the callback of tuple 3,
+    which happens to be a pass through function.  It returns
+    <code>&quot;Foo123&quot;</code>.</li>
+    <li>No failure. We give <code>&quot;Foo123&quot;</code>
+    to the callback of tuple 4, <code>callback4</code>.  It does something, but
+    the return value is not given to anyone.  </li>
+</ol>
+
+<p>What about failure?</p>
+
+<ol>
+    <li>The asynchronous operation fails, and a Failure object is constructed.</li>
+    <li>Failure. We give the failure object to the errback of tuple 1, which
+    happens to be pass through function.  It returns the failure object.</li>
+    <li>Failure. We give the failure object to the errback of tuple 2, which is
+    also a pass through function.  It returns the failure object.</li>
+    <li>Failure. We give the failure object to the errback of tuple 3,
+    <code>errback3</code>.  It acknowledges and logs the error.  It doesn't
+    return anything.</li>
+    <li>No failure (remember, <code>None</code> is a
+    valid result value!) We give <code>None</code> to the callback of tuple 4,
+    <code>callback4</code>.</li>
+</ol>
+
+<p>Think of your callback/errback chains as parallel
+pipes of execution, which could transfer to one another at any point.  As
+a parting word, here is a use of one convenience function, <code>addBoth</code>.</p>
+
+<table class="compare">
+    <tr>
+        <th colspan="1" rowspan="1">Synchronous</th>
+        <th colspan="1" rowspan="1">Asynchronous</th>
+    </tr>
+    <tr>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+3
+4
+</p><span class="py-src-keyword">try</span>:
+    <span class="py-src-variable">synchronous_operation</span>()
+<span class="py-src-keyword">finally</span>:
+    <span class="py-src-variable">cleanup</span>()
+</pre></td>
+        <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
+2
+</p><span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">defer</span>.<span class="py-src-variable">addBoth</span>(<span class="py-src-keyword">lambda</span> <span class="py-src-variable">x</span>: <span class="py-src-variable">cleanup</span>())
+</pre></td>
+    </tr>
+</table>
+
+<p>The lambda is simply a convenient way to avoid passing <code>x</code> to
+<code>clean()</code> (lest Python raise a <code>TypeError</code>).</p>
+
+</div>
+
+    <p><a href="index.html">Index</a></p>
+    <span class="version">Version: </span>
+  </body>
+</html>
