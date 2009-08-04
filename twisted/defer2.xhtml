@@ -59,9 +59,9 @@ it's asynchronous; it can return before it has a result), we return
 a Deferred which you can attach callbacks to.</p>
 
 <pre class="python">
-defer = nonblocking_call("input")
-defer.addCallback(success_handler)
-defer.addErrback(error_handler)
+d = nonblocking_call("input")
+d.addCallback(success_handler)
+d.addErrback(error_handler)
 </pre>
 
 <p>The Deferred object doesn't do anything that you couldn't have done
@@ -90,8 +90,8 @@ value = synchronous_operation()
 process(value)
         </pre></td>
         <td><pre class="python">
-defer = asynchronous_operation()
-defer.addCallback(process)
+d = asynchronous_operation()
+d.addCallback(process)
         </pre></td>
     </tr>
 </table>
@@ -119,8 +119,8 @@ except UserError as e:
 def handle_twisted_error(failure):
     e = failure.trap(UserError)
     handle_error(e)
-defer = asynchronous_operation()
-defer.addErrback(handle_twisted_error)
+d = asynchronous_operation()
+d.addErrback(handle_twisted_error)
         </pre></td>
     </tr>
 </table>
@@ -175,8 +175,8 @@ except:
 def handle_twisted_error(failure):
     handle_error()
     return failure
-defer = asynchronous_operation()
-defer.addErrback(handle_twisted_error)
+d = asynchronous_operation()
+d.addErrback(handle_twisted_error)
         </pre></td>
     </tr>
 </table>
@@ -192,8 +192,8 @@ def handle_twisted_error(failure):
     status = handle_error(failure.value)
     if not status:
         raise UserError
-defer = asynchronous_operation()
-defer.addErrback(handle_twisted_error)
+d = asynchronous_operation()
+d.addErrback(handle_twisted_error)
 </pre>
 
 <p>If you would like to re-raise the original error, it is preferred to use
@@ -225,8 +225,8 @@ def handle_twisted_error(failure):
         handle_another_error()
     else:
         failure.raiseException()
-defer = asynchronous_operation()
-defer.addErrback(handle_twisted_error)
+d = asynchronous_operation()
+d.addErrback(handle_twisted_error)
         </pre></td>
     </tr>
 </table>
@@ -254,9 +254,9 @@ except UserError as e:
 def handle_twisted_error(failure):
     e = failure.trap(UserError)
     handle_error(e)
-defer = asynchronous_operation()
-defer.addCallback(process)
-defer.addErrback(handle_twisted_error)
+d = asynchronous_operation()
+d.addCallback(process)
+d.addErrback(handle_twisted_error)
         </pre></td>
     </tr>
 </table>
@@ -291,9 +291,9 @@ value2 = process(value)
 another_process(value2) # value2, not value!
         </pre></td>
         <td><pre class="python">
-defer = asynchronous_operation()
-defer.addCallback(process)
-defer.addCallback(another_process)
+d = asynchronous_operation()
+d.addCallback(process)
+d.addCallback(another_process)
         </pre></td>
     </tr>
 </table>
@@ -319,8 +319,8 @@ another_process(value)
 def multi_process(value):
     process(value)
     return another_process(value)
-defer = asynchronous_operation()
-defer.addCallback(multi_process)
+d = asynchronous_operation()
+d.addCallback(multi_process)
         </pre></td>
     </tr>
 </table>
@@ -351,9 +351,9 @@ def handle_twisted_error(failure):
 def handle_twisted_another_error(failure):
     e = failure.trap(AnotherUserError)
     handle_another_error(e)
-defer = asynchronous_operation()
-defer.addErrback(handle_twisted_error)
-defer.addErrback(handle_twisted_another_error)
+d = asynchronous_operation()
+d.addErrback(handle_twisted_error)
+d.addErrback(handle_twisted_another_error)
         </pre></td>
     </tr>
 </table>
@@ -380,9 +380,9 @@ process(value)
 def handle_twisted_error(failure):
     e = failure.trap(UserError)
     return handle_error(e)
-defer = asynchronous_operation()
-defer.addErrback(handle_twisted_error)
-defer.addCallback(process)
+d = asynchronous_operation()
+d.addErrback(handle_twisted_error)
+d.addCallback(process)
         </pre></td>
     </tr>
 </table>
@@ -411,8 +411,8 @@ else:
 def handle_twisted_error(failure):
     e = failure.trap(UserError)
     handle_error(e)
-defer = asynchronous_operation()
-defer.addCallbacks(process, handle_twisted_error)
+d = asynchronous_operation()
+d.addCallbacks(process, handle_twisted_error)
         </pre></td>
     </tr>
 </table>
@@ -442,11 +442,11 @@ tuple and repeat until there are no more tuples left.</p>
 <p>Take the following code as an example:</p>
 
 <pre class="python">
-defer = asynchronous_operation()
-defer.addCallback(callback1) # tuple 1
-defer.addCallback(callback2) # tuple 2
-defer.addErrback(errback3) # tuple 3
-defer.addCallbacks(callback4, errback4) # tuple 4
+d = asynchronous_operation()
+d.addCallback(callback1) # tuple 1
+d.addCallback(callback2) # tuple 2
+d.addErrback(errback3) # tuple 3
+d.addCallbacks(callback4, errback4) # tuple 4
 </pre>
 
 <p>Consider two possible scenarios.  First, success:</p>
@@ -499,14 +499,37 @@ finally:
     cleanup()
         </pre></td>
         <td><pre class="python">
-defer = asynchronous_operation()
-defer.addBoth(lambda x: cleanup())
+d = asynchronous_operation()
+d.addBoth(lambda x: cleanup())
         </pre></td>
     </tr>
 </table>
 
 <p>The lambda is simply a convenient way to avoid passing <code>x</code> to
 <code>clean()</code> (lest Python raise a <code>TypeError</code>).</p>
+
+<h3>Fluent interface</h3>
+
+<p>Deferred implements a fluent interface for adding callbacks, where the
+return value of <code>addCallback</code>, <code>addErrback</code> or any
+other similar method is the object itself (<code>return self</code>).  This means you can
+write this:</p>
+
+<pre class="python">
+d = asynchronous_operation()
+d.addCallback(f1).addCallback(f2).addCallback(f3)
+</pre>
+
+<p>which is equivalent to:</p>
+
+<pre class="python">
+d = asynchronous_operation()
+d.addCallback(f1)
+d.addCallback(f2)
+d.addCallback(f3)
+</pre>
+
+<p>Use of this style is a matter of taste and consistency.</p>
 
 </body>
 </html>

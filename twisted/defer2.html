@@ -6,7 +6,7 @@
 
   <body bgcolor="white">
     <h1 class="title">Guide to twisted.internet.defer</h1>
-    <div class="toc"><ol><li><a href="#auto0">Deferreds standardize callbacks</a></li><li><a href="#auto1">Deferred</a></li><ul><li><a href="#auto2">Callbacks</a></li><li><a href="#auto3">Errbacks</a></li><li><a href="#auto4">Callbacks and errbacks</a></li><li><a href="#auto5">Chaining callbacks</a></li></ul></ol></div>
+    <div class="toc"><ol><li><a href="#auto0">Deferreds standardize callbacks</a></li><li><a href="#auto1">Deferred</a></li><ul><li><a href="#auto2">Callbacks</a></li><li><a href="#auto3">Errbacks</a></li><li><a href="#auto4">Callbacks and errbacks</a></li><li><a href="#auto5">Chaining callbacks</a></li><li><a href="#auto6">Fluent interface</a></li></ul></ol></div>
     <div class="content">
 
 <span/>
@@ -67,9 +67,9 @@ a Deferred which you can attach callbacks to.</p>
 <pre class="python"><p class="py-linenumber">1
 2
 3
-</p><span class="py-src-variable">defer</span> = <span class="py-src-variable">nonblocking_call</span>(<span class="py-src-string">&quot;input&quot;</span>)
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">success_handler</span>)
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">error_handler</span>)
+</p><span class="py-src-variable">d</span> = <span class="py-src-variable">nonblocking_call</span>(<span class="py-src-string">&quot;input&quot;</span>)
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">success_handler</span>)
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">error_handler</span>)
 </pre>
 
 <p>The Deferred object doesn't do anything that you couldn't have done
@@ -100,8 +100,8 @@ gets invoked with the result as an argument when it becomes available:</p>
 </pre></td>
         <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
 2
-</p><span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">process</span>)
+</p><span class="py-src-variable">d</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">process</span>)
 </pre></td>
     </tr>
 </table>
@@ -136,8 +136,8 @@ register an errback in order to deal with an error gracefully.</p>
 </p><span class="py-src-keyword">def</span> <span class="py-src-identifier">handle_twisted_error</span>(<span class="py-src-parameter">failure</span>):
     <span class="py-src-variable">e</span> = <span class="py-src-variable">failure</span>.<span class="py-src-variable">trap</span>(<span class="py-src-variable">UserError</span>)
     <span class="py-src-variable">handle_error</span>(<span class="py-src-variable">e</span>)
-<span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_error</span>)
+<span class="py-src-variable">d</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_error</span>)
 </pre></td>
     </tr>
 </table>
@@ -188,8 +188,8 @@ except block:</p>
 </p><span class="py-src-keyword">def</span> <span class="py-src-identifier">handle_twisted_error</span>(<span class="py-src-parameter">failure</span>):
     <span class="py-src-variable">handle_error</span>()
     <span class="py-src-keyword">return</span> <span class="py-src-variable">failure</span>
-<span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_error</span>)
+<span class="py-src-variable">d</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_error</span>)
 </pre></td>
     </tr>
 </table>
@@ -210,8 +210,8 @@ handle it properly:</p>
     <span class="py-src-variable">status</span> = <span class="py-src-variable">handle_error</span>(<span class="py-src-variable">failure</span>.<span class="py-src-variable">value</span>)
     <span class="py-src-keyword">if</span> <span class="py-src-keyword">not</span> <span class="py-src-variable">status</span>:
         <span class="py-src-keyword">raise</span> <span class="py-src-variable">UserError</span>
-<span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_error</span>)
+<span class="py-src-variable">d</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_error</span>)
 </pre>
 
 <p>If you would like to re-raise the original error, it is preferred to use
@@ -256,8 +256,8 @@ makes it easier to simulate multiple <code>except</code> blocks:</p>
         <span class="py-src-variable">handle_another_error</span>()
     <span class="py-src-keyword">else</span>:
         <span class="py-src-variable">failure</span>.<span class="py-src-variable">raiseException</span>()
-<span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_error</span>)
+<span class="py-src-variable">d</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_error</span>)
 </pre></td>
     </tr>
 </table>
@@ -294,9 +294,9 @@ this simply means you should define both a callback and an errback.</p>
 </p><span class="py-src-keyword">def</span> <span class="py-src-identifier">handle_twisted_error</span>(<span class="py-src-parameter">failure</span>):
     <span class="py-src-variable">e</span> = <span class="py-src-variable">failure</span>.<span class="py-src-variable">trap</span>(<span class="py-src-variable">UserError</span>)
     <span class="py-src-variable">handle_error</span>(<span class="py-src-variable">e</span>)
-<span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">process</span>)
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_error</span>)
+<span class="py-src-variable">d</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">process</span>)
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_error</span>)
 </pre></td>
     </tr>
 </table>
@@ -335,9 +335,9 @@ and Deferreds are ideally suited for modeling them.</p>
         <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
 2
 3
-</p><span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">process</span>)
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">another_process</span>)
+</p><span class="py-src-variable">d</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">process</span>)
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">another_process</span>)
 </pre></td>
     </tr>
 </table>
@@ -369,8 +369,8 @@ this directly into your callback:</p>
 </p><span class="py-src-keyword">def</span> <span class="py-src-identifier">multi_process</span>(<span class="py-src-parameter">value</span>):
     <span class="py-src-variable">process</span>(<span class="py-src-variable">value</span>)
     <span class="py-src-keyword">return</span> <span class="py-src-variable">another_process</span>(<span class="py-src-variable">value</span>)
-<span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">multi_process</span>)
+<span class="py-src-variable">d</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">multi_process</span>)
 </pre></td>
     </tr>
 </table>
@@ -415,9 +415,9 @@ blocks:</p>
 <span class="py-src-keyword">def</span> <span class="py-src-identifier">handle_twisted_another_error</span>(<span class="py-src-parameter">failure</span>):
     <span class="py-src-variable">e</span> = <span class="py-src-variable">failure</span>.<span class="py-src-variable">trap</span>(<span class="py-src-variable">AnotherUserError</span>)
     <span class="py-src-variable">handle_another_error</span>(<span class="py-src-variable">e</span>)
-<span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_error</span>)
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_another_error</span>)
+<span class="py-src-variable">d</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_error</span>)
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_another_error</span>)
 </pre></td>
     </tr>
 </table>
@@ -453,9 +453,9 @@ from a cache).</p>
 </p><span class="py-src-keyword">def</span> <span class="py-src-identifier">handle_twisted_error</span>(<span class="py-src-parameter">failure</span>):
     <span class="py-src-variable">e</span> = <span class="py-src-variable">failure</span>.<span class="py-src-variable">trap</span>(<span class="py-src-variable">UserError</span>)
     <span class="py-src-keyword">return</span> <span class="py-src-variable">handle_error</span>(<span class="py-src-variable">e</span>)
-<span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_error</span>)
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">process</span>)
+<span class="py-src-variable">d</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">handle_twisted_error</span>)
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">process</span>)
 </pre></td>
     </tr>
 </table>
@@ -493,8 +493,8 @@ are completely isolated from each other.</p>
 </p><span class="py-src-keyword">def</span> <span class="py-src-identifier">handle_twisted_error</span>(<span class="py-src-parameter">failure</span>):
     <span class="py-src-variable">e</span> = <span class="py-src-variable">failure</span>.<span class="py-src-variable">trap</span>(<span class="py-src-variable">UserError</span>)
     <span class="py-src-variable">handle_error</span>(<span class="py-src-variable">e</span>)
-<span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallbacks</span>(<span class="py-src-variable">process</span>, <span class="py-src-variable">handle_twisted_error</span>)
+<span class="py-src-variable">d</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addCallbacks</span>(<span class="py-src-variable">process</span>, <span class="py-src-variable">handle_twisted_error</span>)
 </pre></td>
     </tr>
 </table>
@@ -528,11 +528,11 @@ tuple and repeat until there are no more tuples left.</p>
 3
 4
 5
-</p><span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">callback1</span>) <span class="py-src-comment"># tuple 1</span>
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">callback2</span>) <span class="py-src-comment"># tuple 2</span>
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">errback3</span>) <span class="py-src-comment"># tuple 3</span>
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addCallbacks</span>(<span class="py-src-variable">callback4</span>, <span class="py-src-variable">errback4</span>) <span class="py-src-comment"># tuple 4</span>
+</p><span class="py-src-variable">d</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">callback1</span>) <span class="py-src-comment"># tuple 1</span>
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">callback2</span>) <span class="py-src-comment"># tuple 2</span>
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addErrback</span>(<span class="py-src-variable">errback3</span>) <span class="py-src-comment"># tuple 3</span>
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addCallbacks</span>(<span class="py-src-variable">callback4</span>, <span class="py-src-variable">errback4</span>) <span class="py-src-comment"># tuple 4</span>
 </pre>
 
 <p>Consider two possible scenarios.  First, success:</p>
@@ -588,14 +588,41 @@ a parting word, here is a use of one convenience function, <code>addBoth</code>.
 </pre></td>
         <td colspan="1" rowspan="1"><pre class="python"><p class="py-linenumber">1
 2
-</p><span class="py-src-variable">defer</span> = <span class="py-src-variable">asynchronous_operation</span>()
-<span class="py-src-variable">defer</span>.<span class="py-src-variable">addBoth</span>(<span class="py-src-keyword">lambda</span> <span class="py-src-variable">x</span>: <span class="py-src-variable">cleanup</span>())
+</p><span class="py-src-variable">d</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addBoth</span>(<span class="py-src-keyword">lambda</span> <span class="py-src-variable">x</span>: <span class="py-src-variable">cleanup</span>())
 </pre></td>
     </tr>
 </table>
 
 <p>The lambda is simply a convenient way to avoid passing <code>x</code> to
 <code>clean()</code> (lest Python raise a <code>TypeError</code>).</p>
+
+<h3>Fluent interface<a name="auto6"/></h3>
+
+<p>Deferred implements a fluid interface for adding callbacks, where the
+return value of <code>addCallback</code>, <code>addErrback</code> or any
+other similar method is the object itself (<code>return self</code>).  This means you can
+write this:</p>
+
+<pre class="python"><p class="py-linenumber">1
+2
+</p><span class="py-src-variable">d</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">f1</span>).<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">f2</span>).<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">f3</span>)
+</pre>
+
+<p>which is equivalent to:</p>
+
+<pre class="python"><p class="py-linenumber">1
+2
+3
+4
+</p><span class="py-src-variable">d</span> = <span class="py-src-variable">asynchronous_operation</span>()
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">f1</span>)
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">f2</span>)
+<span class="py-src-variable">d</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">f3</span>)
+</pre>
+
+<p>Use of this style is a matter of taste and consistency.</p>
 
 </div>
 
