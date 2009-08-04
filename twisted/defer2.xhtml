@@ -264,7 +264,7 @@ d.addErrback(handle_twisted_error)
 <p>Notice that in the synchronous version, <code>process</code>
 is <em>inside</em> the try..except block.  This translates over
 to the asynchronous code: if
-<code>process</code> throws an exception, <code>handle_twisted</code>
+<code>process</code> throws an exception, <code>handle_twisted_error</code>
 will get a <code>Failure</code> object corresponding to that
 exception.  The errback could handle <em>either</em> an error
 from the asynchronous operation or from our callback.
