@@ -556,7 +556,7 @@ d.addCallback(async_process)
 d.addCallback(process)
 </pre>
 
-<p>Consider the simplest interaction between two deferreds: one deferred has
+<p>Consider the following interaction between two deferreds: one deferred has
 a callback chain that at some point, instead of returning a <code>Failure</code>
 or some Python result, returns a <code>Deferred</code>.  What does this mean?
 If you were being pedantic, you could argue that a deferred is merely a Python
@@ -583,10 +583,75 @@ d.addCallback(process)
 <p>In fact, this is <em>exactly</em> what Twisted does behind the scenes
 (the magical <code>finish_callback_chain(value)</code> function is
 actually a bound method from the original deferred).  This is the technique
-of setting up a callback to another deferred.  Keep it in mind, because
+of setting up a callback which calls another Deferred.  Keep it in mind, because
 this is the bread and butter of deferred composition.</p>
 
 <h3>DeferredList</h3>
+
+<p>We are now ready to consider our original problem: a Deferred that
+would only fire after some other number of Deferreds fired.</p>
+
+<pre class="python">
+class FireWhenAllFinish(Deferred):
+    def __init__(self, deferreds):
+        self.deferreds = deferreds
+</pre>
+
+<p>We start off with a logical constructor for our class: a simple
+list of the Deferred objects we want to finish before this Deferred
+fires.  Recall that we need to setup callbacks in each Deferred in
+<code>deferreds</code> to tell us when they've finished.  Thus:</p>
+
+<pre class="python">
+class FireWhenAllFinish(Deferred):
+    def __init__(self, deferreds):
+        self.deferreds = deferreds
+        for d in self.deferreds:
+            self.addCallbacks(self._cbDeferred, self._ebDeferred)
+            self.addErrback(self._ebDeferred)
+    def _cbDeferred(self, result):
+        raise NotImplemented
+    def _ebDeferred(self, failure):
+        raise NotImplemented
+</pre>
+
+<p>Now, for the definition of <code>_cbDeferred</code>, after a little
+thought, and the knowledge that <code>callback()</code> and
+<code>errback()</code> are the
+methods you can use to <em>fire</em> a deferred (it's what
+<code>asynchronous_operation()</code> would have called behind
+the veil), a relatively simple implementation comes to mind:</p>
+
+<pre class="python">
+class FireWhenAllFinish(Deferred):
+    def __init__(self, deferreds):
+        self.deferreds = deferreds
+        self.finishedCount = 0
+        if not self.deferreds:
+            self.callback()
+        for d in self.deferreds:
+            self.addCallbacks(self._cbDeferred, self._ebDeferred)
+    def _cbDeferred(self, result):
+        self.finishedCount += 1
+        if self.finishedCount == len(self.deferreds):
+            self.callback()
+    def _ebDeferred(self, failure):
+        if not self.called: # this property is True if callback()/errback() has already been called
+            self.failed = True
+            self.errback()
+</pre>
+
+<p>There are two gotchas: the first is that if there were no
+deferreds passed into this deferred, we should automatically fire
+our callback; after all, we're not waiting on anything thing.
+The second is that <code>callback()</code> and <code>errback()</code>
+must only be called (between the two of them) once, so we manually
+guard for this by checking if <code>self.called</code> is <code>False</code>
+before making the errback call (why such a check is unnecessary for
+callback call is left as an exercise for the reader.)</p>
+
+<p>There is one thing that is notably missing from our current
+implementation: results.</p>
 
 <h3>Batons</h3>
 
