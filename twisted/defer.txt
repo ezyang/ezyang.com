@@ -1,17 +1,5 @@
 == Old Stuff ==
 
-Asynchronous Programming with Twisted
-# Introduction to concurrent programming
-    * Waiting for answers
-    * Not waiting on data
-    * Non-blocking calls
-    * Callbacks
-# Deferreds
-# The Problem that Deferreds Solve
-# Deferreds - a signal that data is yet to come
-    * Callbacks
-    * Error handling: errbacks
-
 Deferred Reference
 # Callbacks
     * Multiple callbacks
@@ -84,11 +72,14 @@ def deferredGenerator(f) # decorator
 # even more amazing yield style sugaring
 def inlineCallbacks # decorator
 
-== Outline ==
+== Tutorial ==
 
 # Synchronous to Asynchronous: The Method to the Madness
     - Convert synchronous code to asynchronous code
     - Why asynchronous?
+
+== Reference ==
+
 # Deferred
     - Basic operation
     - Convenience primitives (succeed, fail, execute, maybeDeferred)
