@@ -26,7 +26,15 @@ body {background-position:top left;background-attachment:fixed;
 h1{color:#1079ac;font-weight:normal;font-family:sans-serif;
   text-align:center;}
 h1 a {color:inherit;text-decoration:inherit;}
-h2{font-family:sans-serif;border-bottom:1px solid #CCC;font-weight:normal;text-align:center;margin:1.4em 0 0.2em}
+h2{font-family:sans-serif;border-bottom:1px solid #CCC;font-weight:normal;margin:1.4em 0 0.2em;}
+
+#content .cb {padding-left: 30%}
+#content h2 {padding-left: 0; border-bottom:none; text-align:right; padding-right:75%;}
+#content li {margin-top:1em;}
+#content table {margin-left:2em;}
+table {border-collapse: collapse}
+thead tr th {border-bottom: 1px solid #CCC;}
+tbody th {text-align:right; padding-right:2em;}
 
 a img{border:0;}
 
