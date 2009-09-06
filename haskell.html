@@ -95,7 +95,7 @@ two types: pure and impure.  Pure errors utilize data types
 like <code>Maybe</code>, <code>Either</code> or
 <code>MonadError</code> and are used monadically to short-circuit
 execution.  Impure errors mean that the function
-returns "bottom" (a type that means the computation cannot
+returns "bottom" (a "value" that means the computation cannot
 terminate) and possibly have additional semantics attached
 to it, such as <code>error</code> (prints string error message)
 or asynchronous exceptions.  This is a simplification.</p>
