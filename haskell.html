@@ -19,7 +19,7 @@
 <p>New practioners of Haskell may find themselves guided by this page.  Here
 are things I wish I knew when I started learning the language.</p>
 </div>
-<h2>Environment</h2>
+<h2 id="Environment">Environment</h2>
 <div class="cb">
 <p>Even if you are running a reasonably modern Linux distribution, your
 version of GHC is likely out of date.  Cabal 1.6 requires GHC 6.10, you
@@ -29,7 +29,7 @@ can check what your distribution offers with <code>ghc --version</code>.</p>
 From there, install the <a href="http://hackage.haskell.org/platform/">Haskell
 Platform</a>.</p>
 </div>
-<h2>XMonad</h2>
+<h2 id="XMonad">XMonad</h2>
 <div class="cb">
 <p><a href="http://xmonad.org/">XMonad</a> is a wonderful tiling window manager that also happens to
 be written in Haskell.  You can grab it with <code>cabal install xmonad</code>.
@@ -40,7 +40,7 @@ above <code>exec xmonad</code>.  You should also install (with your
 regular non-Cabal package manager) <code>dmenu</code>
 so that <kbd>mod+p</kbd> will work.</p>
 </div>
-<h2>Literature</h2>
+<h2 id="Literature">Literature</h2>
 <div class="cb">
 <p>I learned with <a href="http://book.realworldhaskell.org/read/">Real World Haskell</a>
 and Brent Yorgey's <a href="http://haskell.org/sitewiki/images/8/85/TMR-Issue13.pdf">Typeclassopedia</a>.
@@ -53,7 +53,7 @@ common monads from scratch.  Be competent with both <code>&gt;&gt;=</code>
 and the <code>do</code> sugaring.  <code>return</code> does not
 short-circuit execution.</p>
 </div>
-<h2>Hoogle</h2>
+<h2 id="Hoogle">Hoogle</h2>
 <div class="cb">
 <p><a href="http://haskell.org/hoogle/">I Hoogle.  Do you
 Hoogle?</a>  I have Hoogle setup as a keyword shortcut in
@@ -63,7 +63,7 @@ to find what module functions are in, lookup those weird
 operators like <code>&gt;&gt;&gt;</code> and <code>&lt;*&gt;</code>,
 and discover new functions from type signatures.</p>
 </div>
-<h2>Fixing types</h2>
+<h2 id="FixingTypes">Fixing types</h2>
 <div class="cb">
 <p>So you got a type error.  How do you go about fixing it?</p>
 <ul>
@@ -88,7 +88,7 @@ and discover new functions from type signatures.</p>
     <li>Did you ask #haskell?</li>
 </ul>
 </div>
-<h2>Exercises</h2>
+<h2 id="Exercises">Exercises</h2>
 <div class="cb">
 <p>I find working through mind-bending problems is a good way
 to test how well you've figured out a concept and also get
@@ -134,7 +134,7 @@ be done as you work your way through Typeclassopedia.</p>
     with only <code>&lt;$&gt;</code> and <code>&lt;*&gt;</code>.</li>
 </ul>
 </div>
-<h2>Errors</h2>
+<h2 id="Errors">Errors</h2>
 <div class="cb">
 <p>Errors can be broadly be divided into
 two types: pure and impure.  Pure errors utilize data types
