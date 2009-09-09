@@ -88,6 +88,52 @@ and discover new functions from type signatures.</p>
     <li>Did you ask #haskell?</li>
 </ul>
 </div>
+<h2>Exercises</h2>
+<div class="cb">
+<p>I find working through mind-bending problems is a good way
+to test how well you've figured out a concept and also get
+intimately familiar with details.  Here are some problems
+that should
+be done as you work your way through Typeclassopedia.</p>
+<h3>Functors</h3>
+<ul>
+    <li>Implement <code>fmap</code> for <code>Either e</code>,
+    <code>((,) e)</code> and <code>((-&gt;) e)</code>.</li>
+    <li>Write a function with type signature
+    <code>Functor f =&gt; (a -&gt; b) -&gt; f (f a) -&gt; f (f b)</code>.
+    If you are stuck, try writing the function for a specific instance
+    of functor.  Can this type signature be generalized?</li>
+    <li>What is the type of <code>fmap fmap</code>? Specify
+    both using <code>Functor f =&gt;</code> and explicitly.
+    Remember that all functions in Haskell are automatically curried.</li>
+    <li>What is the type of <code>fmap fmap fmap</code>?</li>
+</ul>
+<h3>Pointed</h3>
+<ul>
+    <li>Implement <code>pure</code> for <code>[]</code> and
+    <code>((-&gt;) e)</code>.</li>
+    <li>Assuming a well-behaved functor that follows the laws
+    <code>fmap id = id</code> and <code>fmap (g . h) = fmap g . fmap h</code>,
+    prove that <code>fmap g . pure = pure . g</code> for all definitions
+    of <code>pure</code>.</li>
+</ul>
+<h3>Applicative</h3>
+<ul>
+    <li>What symbols are used for the infix version of <code>fmap</code>?</li>
+    <li>Implement <code>&lt;*&gt;</code> for <code>Maybe</code>,
+    <code>[]</code> and <code>ZipList</code>.</li>
+    <li>Implement <code>&lt;*&gt;</code> for <code>((-&gt;) e)</code>.
+    This is tricky.</li>
+    <li>What is the value of <code>[(+1), (+2)] &lt;*&gt; [4, 5]</code>?</li>
+    <li>What is the type of <code>const &lt;*&gt; id</code>?  Rewrite this
+    expression in a form that makes this obvious from the applicative
+    law <code>fmap g x = pure g &lt;*&gt; x</code>.</li>
+    <li>What is the value of <code>((+) &lt;*&gt; (+3)) 5?</code>
+    <li>Write <code>fmap</code> with <code>pure</code> and <code>&lt;*&gt;</code>.</li>
+    <li>Write <code>liftA2 :: Applicative f =&gt; (a -&gt; b -&gt; c) -&gt; f a -&gt; f b -&gt; f c</code>
+    with only <code>&lt;$&gt;</code> and <code>&lt;*&gt;</code>.</li>
+</ul>
+</div>
 <h2>Errors</h2>
 <div class="cb">
 <p>Errors can be broadly be divided into
