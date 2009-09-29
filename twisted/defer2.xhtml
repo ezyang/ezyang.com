@@ -116,10 +116,10 @@ except UserError as e:
     handle_error(e)
         </pre></td>
         <td><pre class="python">
+d = asynchronous_operation()
 def handle_twisted_error(failure):
     e = failure.trap(UserError)
     handle_error(e)
-d = asynchronous_operation()
 d.addErrback(handle_twisted_error)
         </pre></td>
     </tr>
@@ -172,10 +172,10 @@ except:
     raise
         </pre></td>
         <td><pre class="python">
+d = asynchronous_operation()
 def handle_twisted_error(failure):
     handle_error()
     return failure
-d = asynchronous_operation()
 d.addErrback(handle_twisted_error)
         </pre></td>
     </tr>
@@ -188,11 +188,11 @@ You can <em>also</em> throw an exception and Deferred will
 handle it properly:</p>
 
 <pre class="python">
+d = asynchronous_operation()
 def handle_twisted_error(failure):
     status = handle_error(failure.value)
     if not status:
         raise UserError
-d = asynchronous_operation()
 d.addErrback(handle_twisted_error)
 </pre>
 
@@ -218,6 +218,7 @@ except AnotherUserError:
     handler_another_error()
         </pre></td>
         <td><pre class="python">
+d = asynchronous_operation()
 def handle_twisted_error(failure):
     if failure.check(UserError):
         handle_error()
@@ -225,7 +226,6 @@ def handle_twisted_error(failure):
         handle_another_error()
     else:
         failure.raiseException()
-d = asynchronous_operation()
 d.addErrback(handle_twisted_error)
         </pre></td>
     </tr>
@@ -251,11 +251,11 @@ except UserError as e:
     handle_error(e)
         </pre></td>
         <td><pre class="python">
+d = asynchronous_operation()
+d.addCallback(process)
 def handle_twisted_error(failure):
     e = failure.trap(UserError)
     handle_error(e)
-d = asynchronous_operation()
-d.addCallback(process)
 d.addErrback(handle_twisted_error)
         </pre></td>
     </tr>
@@ -316,10 +316,10 @@ process(value)
 another_process(value)
         </pre></td>
         <td><pre class="python">
+d = asynchronous_operation()
 def multi_process(value):
     process(value)
     return another_process(value)
-d = asynchronous_operation()
 d.addCallback(multi_process)
         </pre></td>
     </tr>
@@ -345,14 +345,16 @@ except AnotherUserError as e:
     handle_another_error(e)
         </pre></td>
         <td><pre class="python">
+d = asynchronous_operation()
+
 def handle_twisted_error(failure):
     e = failure.trap(UserError)
     handle_error(e)
+d.addErrback(handle_twisted_error)
+
 def handle_twisted_another_error(failure):
     e = failure.trap(AnotherUserError)
     handle_another_error(e)
-d = asynchronous_operation()
-d.addErrback(handle_twisted_error)
 d.addErrback(handle_twisted_another_error)
         </pre></td>
     </tr>
@@ -377,10 +379,10 @@ except UserError as e:
 process(value)
         </pre></td>
         <td><pre class="python">
+d = asynchronous_operation()
 def handle_twisted_error(failure):
     e = failure.trap(UserError)
     return handle_error(e)
-d = asynchronous_operation()
 d.addErrback(handle_twisted_error)
 d.addCallback(process)
         </pre></td>
@@ -408,10 +410,10 @@ else:
     process(value)
         </pre></td>
         <td><pre class="python">
+d = asynchronous_operation()
 def handle_twisted_error(failure):
     e = failure.trap(UserError)
     handle_error(e)
-d = asynchronous_operation()
 d.addCallbacks(process, handle_twisted_error)
         </pre></td>
     </tr>
@@ -559,10 +561,10 @@ value2 = synchronous_operation_b(value)
 process(value2)
         </pre></td>
         <td><pre class="python">
+d = asynchronous_operation_a()
 def chain(result):
     d = asynchronous_operation_b(result)
     d.addCallback(process)
-d = asynchronous_operation_a()
 d.addCallback(chain)
         </pre></td>
     </tr>
@@ -600,9 +602,9 @@ d.addCallback(process)
 about higher order functions), the asynchronous code is equivalent to this:</p>
 
 <pre class="python">
+d = asynchronous_operation_a()
 def chain(result):
     return asynchronous_operation_b(result)
-d = asynchronous_operation_a()
 d.addCallback(chain)
 d.addCallback(process)
 </pre>
@@ -661,9 +663,9 @@ in our code type should equal <code>2</code>, then:</p>
     </tr>
     <tr>
         <td><pre class="python">
+d = asynchronous_operation()
 def send_message_callback(result):
     return send_message(result, 2)
-d = asynchronous_operation()
 d.addCallback(send_message_callback)
         </pre></td>
         <td><pre class="python">
