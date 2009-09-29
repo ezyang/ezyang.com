@@ -531,9 +531,192 @@ d.addCallback(f3)
 
 <p>Use of this style is a matter of taste and consistency.</p>
 
+<h2>Chaining Deferreds</h2>
+
+<p>All of the examples, to this point, have been focused around
+a single asynchronous operation, and the synchronous post-processing of that
+operation.  However, in the real world, you will often need to
+run multiple asynchronous operations, one after the other.  For
+example, if you
+make an HTTP request, and find out that the request is a redirect,
+you need to make another (asynchronous) HTTP request.</p>
+
+<p>Our code, then, is fatally hobbled if we can't easily chain
+deferreds together. With the framework we setup previously,
+we could implement something along the lines of having the
+callback call the next asynchronous function, and then setup
+the callbacks on the deferreds <em>that</em> function returned.</p>
+
+<table class="compare">
+    <tr>
+        <th>Synchronous</th>
+        <th>Asynchronous</th>
+    </tr>
+    <tr>
+        <td><pre class="python">
+value  = synchronous_operation_a()
+value2 = synchronous_operation_b(value)
+process(value2)
+        </pre></td>
+        <td><pre class="python">
+def chain(result):
+    d = asynchronous_operation_b(result)
+    d.addCallback(process)
+d = asynchronous_operation_a()
+d.addCallback(chain)
+        </pre></td>
+    </tr>
+</table>
+
+<p>But we just spent the first section explaining our wonderful system
+of multiple callbacks and errbacks and, as you might notice, there isn't
+actually a way to get <code>chain</code> to return the value of process in this
+example without making it synchronous.</p>
+
+<p>To make this work, Twisted does something special:  it lets callbacks
+return Deferred, and treats it to mean, "this callback doesn't have the
+answer yet, but when this Deferred fires it will!"</p>
+
+<table class="compare">
+    <tr>
+        <th>Synchronous</th>
+        <th>Asynchronous</th>
+    </tr>
+    <tr>
+        <td><pre class="python">
+value  = synchronous_operation_a()
+value2 = synchronous_operation_b(value)
+process(value2)
+        </pre></td>
+        <td><pre class="python">
+d = asynchronous_operation_a()
+d.addCallback(asynchronous_operation_b)
+d.addCallback(process)
+        </pre></td>
+    </tr>
+</table>
+
+<p>Written a little more explicitly (in case you're still squeamish
+about higher order functions), the asynchronous code is equivalent to this:</p>
+
+<pre class="python">
+def chain(result):
+    return asynchronous_operation_b(result)
+d = asynchronous_operation_a()
+d.addCallback(chain)
+d.addCallback(process)
+</pre>
+
+<p>The mantra is thus:  <em>Callbacks and errbacks can return deferreds</em>.</p>
+
+<p>Now, for some examples.</p>
+
+<h3>Dependencies</h3>
+
+<p>Well written, maintainable callbacks maintain "contracts" with respect to
+their behavior.  Any given callback should have a well-defined value it takes
+and a well-defined value that it returns.  This is good sense that applies
+not only to callbacks but also to functions.</p>
+
+<p>We've now added a slight twist to this, in that any callback can
+return the value that it is contractually obligated to supply, or it
+can <em>promise</em> to return to the value in the form of a Deferred. (Imagine
+if you could get away doing this in real life!)  And, in the process of fulfilling
+that promise, you discover you need to do another asynchronous request.  Something
+has just happened: you're resolving a dependency chain.</p>
+
+<p>[ here goes an example with actual running Twisted code in three steps.
+Pictures of how the "callback" chain looks like as we discover more and
+more dependencies should be supplied ]</p>
+
+<h3>Looping</h3>
+
+<p>A common form of dependency is needing to perform the asynchronous
+operation all over again.  The canonical example of this an HTTP
+redirect: when the callback for a deferred from a page request is
+returned, it could be the result, or it could be an empty body
+with the <code>Location</code> HTTP header set, in which case
+you simply perform the operation over again.</p>
+
+<p>[ here is the HTTP redirect example.  It also should have pictures. ]</p>
+
+<h3>Lambdas</h3>
+
+<p>We now take this opportunity to remind you that chaining deferreds
+often results in the creation of lots of little functions to shuffle
+the result of one operation to the next asynchronous function.  Sometimes
+you can be clever and pass the asynchronous function itself as a callback,
+but this only works if the next asynchronous function takes a single
+parameter, and that parameter is the result of the previous computation.</p>
+
+<p>In simple cases, you may want to use a lambda to move a parameter
+around, or partially apply a function.  Suppose we have an asynchronous
+function <code>send_message(value, type)</code>, and we know that
+in our code type should equal <code>2</code>, then:</p>
+
+<table class="compare">
+    <tr>
+        <th>Without lambdas</th>
+        <th>With lambdas</th>
+    </tr>
+    <tr>
+        <td><pre class="python">
+def send_message_callback(result):
+    return send_message(result, 2)
+d = asynchronous_operation()
+d.addCallback(send_message_callback)
+        </pre></td>
+        <td><pre class="python">
+d = asynchronous_operation()
+d.addCallback(lambda x: send_message(x, 2))
+        </pre></td>
+    </tr>
+</table>
+
+<!--<p>Callbacks and errbacks, combined together, form a language of flow
+control for deferreds, giving us asynchronous analogs of try
+catch blocks.  It is not a stretch, then, that you might need
+asynchronous analogs of other classic flow control mechanisms:
+if statements, for loops, etc.</p>
+
+<p>Let us think about this more carefully, then: when would
+you need some special support for conditional flow or looping
+flow?  If you have actual Python values (not deferreds) of
+the values that you need to test for, you can just use the usual
+Python structures and be done with it.  Even if the test value
+is a deferred object, you can bundle up your code and place it
+into a callback.</p>
+
+<table class="compare">
+    <tr>
+        <th>Synchronous</th>
+        <th>Asynchronous</th>
+    </tr>
+    <tr>
+        <td><pre class="python">
+if synchronous_operation():
+    do_something()
+else:
+    do_something_else()
+        </pre></td>
+        <td><pre class="python">
+def success_handler(result):
+    if result:
+        do_something()
+    else:
+        do_something_else()
+d = asynchronous_operation()
+d.addCallback(success_handler)
+        </pre></td>
+    </tr>
+</table>
+
+<p>What's a little more difficult is if the code in the
+conditional branches are asynchronous.</p>-->
+
 <h2>Composing Deferreds</h2>
 
-<p>Up until now, we've assumed the existence of <code>asynchronous_operation()</code>,
+<!--<p>Up until now, we've assumed the existence of <code>asynchronous_operation()</code>,
 a black box asynchronous function that returns a Deferred for us to add callbacks to,
 which will get called when it finishes its black box magic.</p>
 
@@ -543,52 +726,26 @@ the situation where you'd like a deferred that gets triggered when some other
 number of deferreds are triggered.  Perhaps you're running a batch image download
 script, and you would like to zip up all the files when they're finished downloading;
 you can't attach the zip callback to any single one of the download deferreds, since
-you want all of them to finish!  You want to <em>compose</em> the deferreds into
-larger deferreds.</p>
+you want all of them to finish!  If you were to imagine execution flow as a graph
+(ignoring errbacks for a moment), all of the previous cases we described involved
+a single line of flow.  Now, when we execute things in <em>parallel</em>, this
+single line splits into many lines, and merge back together.</p>-->
 
-<h3>Callback returns deferred</h3>
+<p>Chaining deferred dealt with sequential computation: each successive
+asynchronous operation required the result of the previous computation
+in order to run.  But we could have done this very easily synchronously:
+asynchronous execution shines when we want to perform computations in
+<em>parallel</em>.  But parallelizing computations results in some
+questions: when is a parallel computation complete?  How do I treat
+these parallel computations as a single unit?</p>
 
-<pre class="python">
-def async_process(data):
-    return another_asynchronous_operation(data) # returns Deferred
-d = asynchronous_operation()
-d.addCallback(async_process)
-d.addCallback(process)
-</pre>
+<p>The answer is <em>composition</em>, that is, we can combine deferreds
+together into a single deferred.  As it turns out, Twisted has some
+built-in facilities for doing this.</p>
 
-<p>Consider the following interaction between two deferreds: one deferred has
-a callback chain that at some point, instead of returning a <code>Failure</code>
-or some Python result, returns a <code>Deferred</code>.  What does this mean?
-If you were being pedantic, you could argue that a deferred is merely a Python
-value, and thus the next callback should receive the Deferred (possibly to add
-callbacks to it).  This is not the case:
-Twisted special cases this situation to mean, "I don't have the next value
-to pass down the pipeline yet."  The <em>rest of the callback chain</em>
-is now the callback of this new deferred.</p>
+<h3>The implementation of a DeferredList</h3>
 
-<p>Suppose for a moment, however, that Twisted didn't perform this
-special casing.  How would we achieve this behavior manually?  Assuming
-we have some magical function <code>finish_callback_chain(value)</code>,
-this would be pretty simple (we have omitted errbacks for brevity):</p>
-
-<pre class="python">
-def async_process(data):
-    d = another_asynchronous_operation(data)
-    d.addCallback(finish_callback_chain)
-d = asynchronous_operation()
-d.addCallback(async_process)
-d.addCallback(process)
-</pre>
-
-<p>In fact, this is <em>exactly</em> what Twisted does behind the scenes
-(the magical <code>finish_callback_chain(value)</code> function is
-actually a bound method from the original deferred).  This is the technique
-of setting up a callback which calls another Deferred.  Keep it in mind, because
-this is the bread and butter of deferred composition.</p>
-
-<h3>DeferredList</h3>
-
-<p>We are now ready to consider our original problem: a Deferred that
+<p>Consider a Deferred that
 would only fire after some other number of Deferreds fired.</p>
 
 <pre class="python">
@@ -650,10 +807,12 @@ guard for this by checking if <code>self.called</code> is <code>False</code>
 before making the errback call (why such a check is unnecessary for
 callback call is left as an exercise for the reader.)</p>
 
-<p>There is one thing that is notably missing from our current
-implementation: results.</p>
+<!--<p>There is one thing that is notably missing from our current
+implementation: results.</p> -->
 
-<h3>Batons</h3>
+<h3>Making your own deferreds</h3>
+
+<h3>Simple case: batons</h3>
 
 </body>
 </html>
