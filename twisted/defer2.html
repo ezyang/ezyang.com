@@ -6,7 +6,7 @@
 
   <body bgcolor="white">
     <h1 class="title">Guide to twisted.internet.defer</h1>
-    <div class="toc"><ol><li><a href="#auto0">Deferreds standardize callbacks</a></li><li><a href="#auto1">Deferred</a></li><ul><li><a href="#auto2">Callbacks</a></li><li><a href="#auto3">Errbacks</a></li><li><a href="#auto4">Callbacks and errbacks</a></li><li><a href="#auto5">Chaining callbacks</a></li><li><a href="#auto6">Fluent interface</a></li></ul><li><a href="#auto7">Chaining Deferreds</a></li><ul><li><a href="#auto8">Dependencies</a></li><li><a href="#auto9">Looping</a></li><li><a href="#auto10">Lambdas</a></li></ul><li><a href="#auto11">Composing Deferreds</a></li><ul><li><a href="#auto12">The implementation of a DeferredList</a></li><li><a href="#auto13">Making your own deferreds</a></li><li><a href="#auto14">Simple case: batons</a></li></ul></ol></div>
+    <div class="toc"><ol><li><a href="#auto0">Deferreds standardize callbacks</a></li><li><a href="#auto1">Deferred</a></li><ul><li><a href="#auto2">Callbacks</a></li><li><a href="#auto3">Errbacks</a></li><li><a href="#auto4">Callbacks and errbacks</a></li><li><a href="#auto5">Chaining callbacks</a></li><li><a href="#auto6">Fluent interface</a></li></ul><li><a href="#auto7">Chaining Deferreds</a></li><ul><li><a href="#auto8">Chaining in Pictures</a></li><li><a href="#auto9">Dependencies</a></li><li><a href="#auto10">Looping</a></li><li><a href="#auto11">Lambdas</a></li></ul><li><a href="#auto12">Composing Deferreds</a></li><ul><li><a href="#auto13">The implementation of a DeferredList</a></li><li><a href="#auto14">Making your own deferreds</a></li><li><a href="#auto15">Simple case: batons</a></li></ul></ol></div>
     <div class="content">
 
 <span/>
@@ -718,11 +718,69 @@ about higher order functions), the asynchronous code is equivalent to this:</p>
 <span class="py-src-variable">d</span>.<span class="py-src-variable">addCallback</span>(<span class="py-src-variable">process</span>)
 </pre>
 
-<p>The mantra is thus:  <em>Callbacks and errbacks can return deferreds</em>.</p>
+<p>Here is the mantra:  <em>Callbacks and errbacks can return deferreds</em>.</p>
 
-<p>Now, for some examples.</p>
+<h3>Chaining in Pictures<a name="auto8"/></h3>
 
-<h3>Dependencies<a name="auto8"/></h3>
+<p>We're now going to introduce some visual aids to see how you can
+use deferred chaining to modify program flow.  We'll represent Deferred
+objects as &quot;pipes,&quot; that is, a series of callbacks that take some input,
+process it in turn, and then return some output.</p>
+
+<div style="text-align:center;"><img alt="Plain old deferred object" src="defer.dot.png"/></div>
+
+<p>This is a Deferred that we instantiated from scratch; it doesn't do
+anything and unless we explicitly call it, it will never
+run (in the next section, Composing Deferreds, we will see why Deferred objects
+like this can be useful).  In many other cases, the function we called to
+get this deferred object promised to call back at some point: we'll represent as
+the red text &quot;Asynchronous Code&quot;.  This code provides the input <em>A</em> that
+gets the ball rolling.</p>
+
+<div style="text-align:center;"><img alt="Deferred object that some asynchronous code will call" src="defer-w-async.dot.png"/></div>
+
+<p>Under normal circumstances, <em>C</em> simply falls off into oblivion; no other
+code cares about it!</p>
+
+<p>Now, suppose that the asynchronous code finishes its job and
+calls the Deferred.  While processing this value,
+<em>Callback 1</em> returns a <em>Deferred B</em> instead
+of an actual <em>B</em>, indicating, &quot;No wait, the value isn't ready yet!&quot;</p>
+
+<div style="text-align:center;"><img alt="Deferred object that some asynchronous code will call" src="defer-ret-defer.dot.png"/></div>
+
+<p>We can't just pass <em>Deferred B</em> to <em>Callback 2</em>, since it's
+expecting a <em>B</em>, not a deferred. How do we get <em>B</em> out of <em>Deferred B</em>?
+Well, recall what <em>Deferred B</em> looks like:</p>
+
+<div style="text-align:center;"><img alt="The deferred object that callback 1 returned." src="defer-b.dot.png"/></div>
+
+<p>There are a few comments to be made about this deferred: first off, it's a fully formed
+deferred object that some other asynchronous code, <em>Asynchronous Code for
+B</em>, has promised to call back with a result.
+However, this result in this example isn't actually <em>B</em>; it's
+us <em>B''</em>.  You can imagine this as some precursor value for <em>B</em> that needs to go through
+Callback 1' and Callback 2' before it becomes <em>B</em>.  We've used the prime symbol (') in order
+to distinguish Callback 1 from Callback 1'; they are distinct and may be completely different
+functions.</p>
+
+<p>By now, the words &quot;chain&quot; and the arrow labeled <em>B</em> probably have given you some
+idea how to reincorporate <em>Deferred B</em> into the original deferred.  Sure enough, we
+simply plug it in.</p>
+
+<div style="text-align:center;"><img alt="The deferred object that callback 1 returned." src="defer-new.dot.png"/></div>
+
+<p>(We've omitted Callback 1 from the diagram for the interest of brevity; it
+is now inaccessible and non-existent for the purposes of finishing processing.)
+The evaluation proceeds as normal.  Note that any of the callbacks in our new chained
+Deferred can return a deferred and repeat this process.</p>
+
+<p>One last comment: something interesting has happened to the value that
+comes out of the last callback: for <em>Deferred B</em>, it was actually used!
+Chaining deferreds means that we care about the ultimate end result of our
+callback chain.</p>
+
+<h3>Dependencies<a name="auto9"/></h3>
 
 <p>Well written, maintainable callbacks maintain &quot;contracts&quot; with respect to
 their behavior.  Any given callback should have a well-defined value it takes
@@ -740,7 +798,7 @@ has just happened: you're resolving a dependency chain.</p>
 Pictures of how the &quot;callback&quot; chain looks like as we discover more and
 more dependencies should be supplied ]</p>
 
-<h3>Looping<a name="auto9"/></h3>
+<h3>Looping<a name="auto10"/></h3>
 
 <p>A common form of dependency is needing to perform the asynchronous
 operation all over again.  The canonical example of this an HTTP
@@ -751,7 +809,7 @@ you simply perform the operation over again.</p>
 
 <p>[ here is the HTTP redirect example.  It also should have pictures. ]</p>
 
-<h3>Lambdas<a name="auto10"/></h3>
+<h3>Lambdas<a name="auto11"/></h3>
 
 <p>We now take this opportunity to remind you that chaining deferreds
 often results in the creation of lots of little functions to shuffle
@@ -790,7 +848,7 @@ in our code type should equal <code>2</code>, then:</p>
 
 
 
-<h2>Composing Deferreds<a name="auto11"/></h2>
+<h2>Composing Deferreds<a name="auto12"/></h2>
 
 
 
@@ -806,7 +864,7 @@ these parallel computations as a single unit?</p>
 together into a single deferred.  As it turns out, Twisted has some
 built-in facilities for doing this.</p>
 
-<h3>The implementation of a DeferredList<a name="auto12"/></h3>
+<h3>The implementation of a DeferredList<a name="auto13"/></h3>
 
 <p>Consider a Deferred that
 would only fire after some other number of Deferreds fired.</p>
@@ -898,9 +956,9 @@ callback call is left as an exercise for the reader.)</p>
 
 
 
-<h3>Making your own deferreds<a name="auto13"/></h3>
+<h3>Making your own deferreds<a name="auto14"/></h3>
 
-<h3>Simple case: batons<a name="auto14"/></h3>
+<h3>Simple case: batons<a name="auto15"/></h3>
 
 </div>
 

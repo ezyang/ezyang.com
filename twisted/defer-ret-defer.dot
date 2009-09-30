@@ -1,0 +1,23 @@
+digraph G {
+
+rankdir=LR;
+
+subgraph cluster_deferred {
+    style=filled
+    node [style=filled,fillcolor=white]
+    cb1 -> middle [color=red,fontcolor=darkgreen,label="Deferred B"]
+    middle -> cb2 [style=dashed,color=white,fontcolor=darkgreen,label="B"]
+    middle [shape=point,color=red,fillcolor=red]
+    label="Deferred"
+}
+
+input [shape=point,color=red]
+
+input -> cb1 [label="A",fontcolor=red,color=red]
+cb2 -> output [label="C",fontcolor=darkgreen]
+
+cb1 [label="Callback 1",shape=rect,color=red,fontcolor=red]
+cb2 [label="Callback 2",shape=rect]
+output [shape=point]
+
+}
