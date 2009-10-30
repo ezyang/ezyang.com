@@ -66,6 +66,15 @@ Exec=/etc/X11/Xsession</pre>
     should be called LVDS1, instead of LVDS; so those hard-coded values
     had to be changed.</p>
 </div>
+<h2>Miscellany</h2>
+<div class="cb">
+    <ul>
+        <li>Xmonad boots up <em>very</em> quickly; much more quickly than <code>xsplash</code>
+        thinks you should.  Give <code>xsplash</code> the boot: you can remove it
+        by commenting out the relevant lines in <code>/etc/gdm/PreSession/Default</code></li>
+        <li>Karmic becomes very unhappy if you boot into a non-Karmic kernel.  Don't try it.</li>
+    </ul>
+</div>
 </div>
 </div>
 </body>
