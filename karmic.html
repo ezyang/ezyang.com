@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Ubuntu 9.10: Karmic Koala</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="screen.css" media="screen,projection" type="text/css" />
+</head>
+<body>
+<div id="container">
+<h1>Ubuntu 9.10: Karmic Koala</h1>
+<div id="content">
+<div class="cb">
+    <p>When I upgraded to Karmic, some things broke.  Here's what broke, and here's
+    how I fixed it.</p>
+</div>
+<h2>Xsession</h2>
+<div class="cb">
+    <p>The very first thing I noticed was that I was not able to
+    start my beloved window manager <a href="http://xmonad.org/">xmonad</a>
+    using my <code>.xsession</code> file; the option was conspicuously
+    missing from the set of allowed sessions.</p>
+    <p>As it turns out, the Gnome developers <a href="https://bugzilla.gnome.org/show_bug.cgi?id=589544">decided</a>
+    that Xsession should not be an option by default, and that system administrators
+    should manually install a package that adds support for it.
+    Ubuntu, of course, was
+    <a href="https://bugs.launchpad.net/ubuntu/karmic/+source/gdm/+bug/398300">blithely unaware</a>.</p>
+    <p>After a lot of experimentation (and a wrong desktop file supplied by
+    Ray Strode), creating the file <code>/usr/share/Xsessions</code> with the following
+    contents fixes the problem:</p>
+    <pre>[Desktop Entry]
+Name=Xsession
+Comment=This runs ~/.xsession
+Exec=/etc/X11/Xsession</pre>
+</div>
+<h2>Screensaver</h2>
+<div class="cb">
+    <p>Because I run a custom <code>.xsession</code> file, a lot of machinery
+    in Gnome was in a half-baked state.  The screensaver stopped working
+    after the upgrade; this was identified to be because <code>gnome-settings-manager</code>
+    no longer spawns this process; you'll have to manually load
+    <code>gnome-screensaver</code>.  Curses gnome-settings-manager for having
+    some red herring errors that threw me off while debugging.</p>
+</div>
+<h2>Power button</h2>
+<div class="cb">
+    <p>My power button no longer powered off my laptop.  This was fixed by
+    manually finding the power settings and telling it to "power off" when
+    the power button was pressed, instead of asking the user.  I have no
+    idea why the dialog was not spawned in the earlier case.</p>
+</div>
+<h2>Wireless</h2>
+<div class="cb">
+    <p>iwl3945 decided to totally crap out on me, and refused to associate
+    with the network using wpa_supplicant.  Noting that network manager was
+    managing to associate correctly, I bit the bullet and switched back
+    to using network manager, using <a href="http://stalonetray.sourceforge.net/">stalonetray</a>
+    to store the icon.</p>
+</div>
+<h2>Xrandr</h2>
+<div class="cb">
+    <p>As the proud owner of an X61 Thinkpad Tablet, I have a number of
+    scripts set up to give myself auto-rotation when I switch to tablet
+    mode (graciously stolen from <a href="http://luke.no-ip.org/x60tablet/">this page</a>.)
+    As it turned out, <code>xrandr</code> decided that the default screen
+    should be called LVDS1, instead of LVDS; so those hard-coded values
+    had to be changed.</p>
+</div>
+</div>
+</div>
+</body>
+</html>
