@@ -21,24 +21,32 @@ are things I wish I knew when I started learning the language.</p>
 </div>
 <h2 id="Environment">Environment</h2>
 <div class="cb">
-<p>Even if you are running a reasonably modern Linux distribution, your
-version of GHC is likely out of date.  Cabal 1.6 requires GHC 6.10, you
-can check what your distribution offers with <code>ghc --version</code>.</p>
-<p>If you are running Ubuntu, I recommend installing GHC from
-<a href="https://launchpad.net/~someone561/+archive/ppa">Someone561's PPA</a>.
-From there, install the <a href="http://hackage.haskell.org/platform/">Haskell
+<p>Ubuntu 9.10 and Fedora 11 both ship with versions of GHC
+recent enough to run Cabal.  If you are running Ubuntu 9.04, I recommend installing GHC from
+<a href="https://launchpad.net/~someone561/+archive/ppa">Someone561's PPA</a>.</p>
+<p>The packages they publish for Haskell modules, however, are totally bogus:
+do your self a favor and install the <a href="http://hackage.haskell.org/platform/">Haskell
 Platform</a>.</p>
 </div>
 <h2 id="XMonad">XMonad</h2>
 <div class="cb">
 <p><a href="http://xmonad.org/">XMonad</a> is a wonderful tiling window manager that also happens to
-be written in Haskell.  You can grab it with <code>cabal install xmonad</code>.
-Since Gnome is special, when you edit your <code>.xsession</code> file
-to enable XMonad you will need to run <code>gnome-power-manager &amp;</code> and
-<code>gnome-settings-daemon &amp;</code> (add these as separate lines
-above <code>exec xmonad</code>.  You should also install (with your
-regular non-Cabal package manager) <code>dmenu</code>
-so that <kbd>mod+p</kbd> will work.</p>
+be written in Haskell.  You can grab it with <code>cabal install xmonad</code>.  Plenty
+of people have published their <code>xmonad.hs</code> files, so I won't belabor the point,
+but here are some useful tricks I've accumulated:</p>
+<ul>
+    <li>If you use <code>.xsession</code> to start up XMonad from GDM without using
+    <code>gnome-session</code>, you should also
+    start up <code>gnome-settings-daemon</code>, <code>gnome-power-manager</code>
+    and <code>gnome-screensaver</code>.  Among the things these will fix include
+    your power button, locking your screen and your desktop background.</li>
+    <li>I hate <code>gnome-panel</code> with a passion, but without some sort of panel
+    you can't run Network Manager.  I use <a href="http://stalonetray.sourceforge.net/">stalonetray</a>,
+    with the flags <code>-bg '#000000' -i 8 -geometry 19x1+680+0</code>: in particular,
+    <code>-i 8</code> sets the icon size to something that fits snugly in a default xmobar.  Once
+    the tray is running, spin up <code>nm-applet</code>.</li>
+    <li><a href="http://xmonad.org/xmonad-docs/xmonad-contrib/XMonad-Hooks-FadeInactive.html">Transparency</a> is good.  <a href="http://xmonad.org/xmonad-docs/xmonad-contrib/XMonad-Actions-SpawnOn.html">Windows that spawn on the same workspace that you requested</a> are good.</li>
+</ul>
 </div>
 <h2 id="Literature">Literature</h2>
 <div class="cb">
