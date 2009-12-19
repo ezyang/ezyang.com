@@ -152,69 +152,13 @@ execution.  Impure errors mean that the function
 returns "bottom" (a "value" that means the computation cannot
 terminate) and possibly have additional semantics attached
 to it, such as <code>error</code> (prints string error message)
-or asynchronous exceptions.  This is a simplification.</p>
-<p>The decision tree for deciding what error method to use
-is thus:</p>
-<ul>
-    <li>For trivial error cases, use <code>Maybe a</code>.</li>
-    <li>For functions that can fail in multiple ways,
-    use <code>MonadError m =&gt; m a</code>.  You may find
-    it useful to offer wrappers of this style for the
-    trivial error cases.</li>
-    <li>Never use bottom to propagate errors.  This means
-    avoiding <code>error</code> like the plague, and only
-    using asynchronous exceptions when you absolutely need
-    them (or in IO).</li>
-</ul>
-<p><code>MonadError</code> requires a little explanation:  it is not
-a monad itself but a typeclass.  The most common actual
-type that you will use is probably <code>Error e =&gt; Either e a</code>,
-however, defining your function's return type with the typeclass
-and using <code>throwError</code> for the fail case and
-<code>return</code> for the normal case means that calling code
-can use any instance of <code>MonadError</code> they please.</p>
-<pre>{-# LANGUAGE FlexibleContexts #-}
-
-import Control.Monad
-import Control.Monad.Error (MonadError, throwError, catchError)
-import Control.Monad.Error.Class (Error, noMsg, strMsg)
-import Data.Maybe (listToMaybe)
-
-data MyError = IntegerParseError
-             | CannotBeZeroError
-             | StringParseError
-             | MiscError String
-    deriving (Show, Eq)
-
-instance Error MyError where
-    strMsg = MiscError
-
--- Generic function with no error information
-maybeRead :: Read a =&gt; String -&gt; Maybe a
-maybeRead = fmap fst . listToMaybe . reads
-
--- Function with multiple error states
-parseInteger :: MonadError MyError m =&gt; String -&gt; m Integer
-parseInteger s = maybe (throwError IntegerParseError) f (maybeRead s)
-    where f 0 = throwError CannotBeZeroError
-          f x = return x
-
--- Function wrapping a maybe for composability
-parseString :: MonadError MyError m =&gt; String -&gt; m String
-parseString s = maybe (throwError StringParseError) return (maybeRead s)
-
--- Function that composes errorful results
-parse :: MonadError MyError m =&gt; String -&gt; String -&gt; m (Integer, String)
-parse int str = (,) `liftM` parseInteger int `ap` parseString str
-
--- Function that constrains the monad to be Either MyError a
-run :: String -&gt; String -&gt; IO ()
-run int str = either
-    (const $ putStrLn "fail")
-    (const $ putStrLn "pass")
-    (parse int str)</pre>
-<p>There are several obvious helper functions and typedefs
-we leave as an exercise for the reader.</p>
+or asynchronous exceptions.</p>
+<p>Pure errors are what you should turn to first when you find
+yourself in need of some sort of error reporting mechanism.
+Descriptive pure errors also fall into several categories: some
+errors are intended to be "caught" and then result in execution
+flow change, while others are unrecoverable and intended to
+be passed straight to the user.</p>
 </div>
 </div>
 </div>

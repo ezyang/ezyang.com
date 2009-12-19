@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Hardware</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="screen.css" media="screen,projection" type="text/css" />
+</head>
+<body>
+<div id="container">
+<h1>Hardware</h1>
+<div id="content">
+<div class="cb">
+    <p>Getting Linux to work on laptops is still a fiddly business, despite
+    massive improvements in the driver fronts.  I own a <strong>ThinkPad X61 Tablet</strong>
+    and a <strong>Lenovo IdeaPad S12</strong>.</p>
+</div>
+<h2>X61 Tablet</h2>
+<div class="cb">
+    <p><a href="http://www.thinkwiki.org/wiki/Category:X61_Tablet">ThinkWiki</a> had
+    a very excellent set of pages about ThinkPads.  Installation was smooth and no
+    proprietary drivers were needed.</p>
+    <p>I initially installed with
+    <a href="http://www.thinkwiki.org/wiki/Installing_Ubuntu_9.04_(Jaunty_Jackalope)_on_an_X61_Tablet">Jaunty</a>;
+    I now run Karmic on this machine.  I also referred to <a href="http://luke.no-ip.org/x60tablet/">Luke's page</a>
+    on a slightly different tablet for instructions.</p>
+    <p>I have a home-cooked setup of scripts (partially stolen from Luke) for screen
+    rotation with the accelerometer.  The modified <code>hdaps_ec</code> kernel
+    module that you need can be setup with <code>m-a a-i tp-smapi</code>.</p>
+</div>
+<h2>IdeaPad S12</h2>
+<div class="cb">
+    <p>The IdeaPad S12 has a lot of nonstandard hardware; I needed special
+    drivers for both video and wireless.  I documented my experiences
+    <a href="http://www.thinkwiki.org/wiki/IdeaPad_S12">on ThinkWiki</a>.
+    The webcam works out of the box on Karmic, which is quite nice.</p>
+</div>
+</div>
+</div>
+</body>
+</html>
