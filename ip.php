@@ -17,4 +17,12 @@ if (isset($_GET['record'])) {
     file_put_contents('ip-updated.txt', time());
 }
 
-echo $ip . ' last updated ' . date('r', file_get_contents('ip-updated.txt'));
+$last = (int)file_get_contents('ip-updated.txt');
+$style = 'color:black';
+$delta = time() - $last;
+if ($delta > 240) {
+    $style = 'color:red;font-weight:bold;';
+} elseif ($delta > 120) {
+    $style = 'color:#660';
+}
+echo '<span style="' . $style . '">' . $ip . ' last updated ' . date('r', $last) . '</span';
