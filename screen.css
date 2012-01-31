@@ -5,7 +5,7 @@ body {background-position:top left;background-attachment:fixed;
 #index a {color:#44F; font-weight:bold; text-decoration:none; padding:0 0.2em;}
 #index a:hover {color:#99F;}
 #container{color:#000;background-color:#FFF;margin:0 auto;width:42em;position:relative;}
-#information {text-align:center;color:#888;margin-bottom:3em}
+#information {text-align:center;color:#888;}
 #information a {text-decoration:none;color:#88E;}
 #information a:hover {text-decoration:underline;}
 #primaryContent{}
@@ -39,9 +39,12 @@ tbody th {text-align:right; padding-right:2em;}
 
 a img{border:0;}
 
-#projects {margin-top:0.7em;}
+#phdometer {text-align:center; margin-top:2em;}
+#phdometer .meter { font-size: 5em; color:#888; }
+
+#projects {margin-top:3em;}
 #projects td {padding:0.3em 0;}
 #projects th {font-weight:normal; text-align:right; padding-right:1.2em;}
 
-ul.compact {margin:4em auto 1em; padding:0; text-align:center; font-size:80%; width:70%;}
+ul.compact {margin:3em auto 1em; padding:0; text-align:center; font-size:80%; width:80%;}
 ul.compact li {list-style-type:none; margin:0; padding:0 0.5em; display:inline;}
