@@ -49,8 +49,10 @@ a img{border:0;}
 #phdometer .meter { font-size: 5em; color:#888; }
 
 #projects {margin-top:3em;}
-#projects td {padding:0.3em 0;}
-#projects th {font-weight:normal; text-align:right; padding-right:1.2em;}
+#projects td {padding:0.3em 0; width:30em;}
+#projects th {font-weight:normal; text-align:right; padding-right:1.2em; vertical-align:top; padding-top:0.3em;}
+
+#projects .blurb td, #projects .blurb th {padding-top:2em; vertical-align:top; }
 
 ul.compact {margin:3em auto 1em; padding:0; text-align:center; font-size:80%; width:80%;}
 ul.compact li {list-style-type:none; margin:0; padding:0 0.5em; display:inline;}
