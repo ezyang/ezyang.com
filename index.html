@@ -21,11 +21,8 @@
     <a href="http://blog.ezyang.com">Blog</a> ∙ <a href="http://twitter.com/ezyang">Twitter</a> ∙ <a href="https://plus.google.com/u/0/100791238593914710520/posts">G+</a> ∙ <a href="https://www.facebook.com/ezyang">Facebook</a> ∙ <a href="https://github.com/ezyang">GitHub</a><br />
 </div>
 <table id="projects">
-    <tr><th>λ<sub>P,S</sub></th>
-        <td>a programming language for computing on encrypted data <span class="wip">*</span></td>
-
-    <tr><th>Haskell/Dune</th>
-        <td>an operating system written in Haskell on top of Linux <span class="wip">*</span></td></tr>
+    <tr><th><a href="http://metro.ezyang.com">Metro Maps<br/><small>of the News</small></a></th>
+        <td>a visual metaphor for interconnected story lines<div class="extra">(joint work with <a href="http://www.cs.cmu.edu/~dshahaf/">Dafna Shahaf</a>, <a href="https://twitter.com/math4origami">Russell Chou</a> and <a href="http://www.quora.com/Jacob-Jensen">Jacob Jensen</a>)</div></td></tr>
 
     <tr><th><a href="http://heap.ezyang.com">hp/D3.js</a></th>
         <td>an interactive GHC heap profile pastebin</td></tr>
@@ -45,7 +42,7 @@
     <tr><th><a href="http://csrf.htmlpurifier.org/">CSRF Magic</a></th>
         <td>automatic protection against Cross-Site Request Forgery</td></tr>
 
-    <tr><th>&nbsp;</th><td style="text-align:right"><small class="wip">* works in progress</small></td></tr>
+    <tr><th>&nbsp;</th><td style="text-align:right"><small class="wip">* work in progress</small></td></tr>
 
     <tr class="blurb"><th><img src="photo.jpg" /></th><td>I am a first year PhD student at Stanford currently <a
     href="http://cs.stanford.edu/content/first-year-research-rotation-program">rotating</a>
@@ -60,7 +57,20 @@ and do
 <small>(I use a <a href="hardware.html">ThinkPad X61 Tablet</a>. You can find me on <code>freenode</code> as <code>ezyang</code>,
 or on any of these websites: <a href="http://stackoverflow.com/users/23845/edward-z-yang">Stack Overflow</a>, <a href="http://en.wikipedia.org/wiki/User:Edward_Z._Yang">Wikipedia</a>, <a href="https://www.tripit.com/people/ezyang">Tripit</a>, <a href="http://www.reddit.com/user/ezyang/">Reddit</a>, <a href="http://www.linkedin.com/in/ezyang">LinkedIn</a>, <a href="http://www.mendeley.com/profiles/edward-yang/">Mendeley</a>.)</small>
 </td></tr>
+    <tr><td colspan="2" id="working">What are my collaborators and I working on?</td></tr>
+    <tr><th>&nbsp;</th>
+        <td>a dynamic information flow control system for V8
+            <div class="extra"><a href="http://hails.scs.stanford.edu/">information flow control</a> may be a subsuming paradigm for security policies in browsers, e.g. same-origin policy; how would IFC support at the JavaScript engine level change the way we do web security?</div></td></tr>
+
+    <tr><th>&nbsp;</th>
+        <td>an investigation of the sociological principles of API design
+        <div class="extra">social coding websites like GitHub offer a corpus of code of unprecedented size; how developers use APIs in practice, and how we can construct newer, safer APIs that they are likely to adopt?</div></td></tr>
+
+    <tr><th>λ<sub>P,S</sub></th>
+        <td>a programming language for computing on encrypted data
+            <div class="extra">homomorphic encryption requires computation to be oblivious: flow control can never depend on secret data.  how do you program in such a setting, and what data structures can you implement?  <a href="http://eprint.iacr.org/2011/561.pdf">Here is some prior work.</a></div></tr>
 </table>
+
 
 <ul class="compact">
     <li><a href="http://hackage.haskell.org/package/Cabal"
