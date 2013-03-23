@@ -42,23 +42,20 @@
     <tr><th><a href="http://csrf.htmlpurifier.org/">CSRF Magic</a></th>
         <td>automatic protection against Cross-Site Request Forgery</td></tr>
 
-    <tr class="blurb"><th><img src="photo.jpg" /></th><td>I am a first year PhD student at Stanford currently <a
-    href="http://cs.stanford.edu/content/first-year-research-rotation-program">rotating</a>
-with <a href="http://www.scs.stanford.edu/~dm/">David Mazières</a>
-and the <a href="http://www.scs.stanford.edu/">Secure Computer Systems</a> group.
-I'm interested in implementing and refining programming languages ideas
-(functional programming, compilers, type theory, logic,
-metaprogramming, theorem proving) for real world systems.  I'm a big fan
-of Haskell, a non-strict purely functional language.  In my spare time, I play the oboe
-and do
-<a href="http://en.wikipedia.org/wiki/Change_ringing">British change ringing</a>.<br />
+    <tr class="blurb"><th><img src="photo.jpg" /></th><td>I am a first year PhD student at Stanford advised by <a href="http://www.scs.stanford.edu/~dm/">David Mazières</a>
+in the <a href="http://www.scs.stanford.edu/">Secure Computer Systems</a> group.
+I'm interested in applying operating system mechanisms (hardware
+isolation, dynamic resource limits) to the design and construction
+programming languages, and vice versa (type systems, formal
+verification, information flow control).  I'm a big fan of Haskell, a
+non-strict purely functional language.<br />
 <small>(I use a <a href="hardware.html">ThinkPad X61 Tablet</a>. You can find me on <code>freenode</code> as <code>ezyang</code>,
 or on any of these websites: <a href="http://stackoverflow.com/users/23845/edward-z-yang">Stack Overflow</a>, <a href="http://en.wikipedia.org/wiki/User:Edward_Z._Yang">Wikipedia</a>, <a href="https://www.tripit.com/people/ezyang">Tripit</a>, <a href="http://www.reddit.com/user/ezyang/">Reddit</a>, <a href="http://www.linkedin.com/in/ezyang">LinkedIn</a>, <a href="http://www.mendeley.com/profiles/edward-yang/">Mendeley</a>.)</small>
 </td></tr>
     <tr><td colspan="2" id="working">What are my collaborators and I working on?</td></tr>
     <tr><th>&nbsp;</th>
-        <td>a dynamic information flow control system for V8
-            <div class="extra"><a href="http://hails.scs.stanford.edu/">information flow control</a> may be a subsuming paradigm for security policies in browsers, e.g. same-origin policy; how would IFC support at the JavaScript engine level change the way we do web security?</div></td></tr>
+        <td>a dynamic information flow control API for browsers
+            <div class="extra"><a href="http://hails.scs.stanford.edu/">information flow control</a> may be a subsuming paradigm for security policies in browsers, e.g. same-origin policy; how would an API for IFC change the way we do web security?</div></td></tr>
 
     <tr><th>&nbsp;</th>
         <td>an investigation of the sociological principles of API design
@@ -69,6 +66,12 @@ or on any of these websites: <a href="http://stackoverflow.com/users/23845/edwar
             <div class="extra">homomorphic encryption requires computation to be oblivious: flow control can never depend on secret data.  how do you program in such a setting, and what data structures can you implement?  <a href="http://eprint.iacr.org/2011/561.pdf">Here is some prior work.</a></div></tr>
 </table>
 
+
+<div id="working" style="margin-bottom:1em;margin-top:2em;">Recent publications</div>
+
+<ul class="papers">
+    <li class="paper">Edward Yang, Deian Stefan, John Mitchell, David Mazières, Petr Marchenko, Brad Karp. <strong>Toward Principled Browser Security</strong>. In <em>Proceedings of The 14th Workshop on Hot Topics in Operating Systems (HotOS XIV), USENIX 2013.</em> To appear.</li>
+</ul>
 
 <ul class="compact">
     <li><a href="http://hackage.haskell.org/package/Cabal"
