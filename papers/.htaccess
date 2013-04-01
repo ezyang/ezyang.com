@@ -1,0 +1,4 @@
+AddType text/plain .bib
+<Files *.bib>
+  SetHandler none
+</Files>
