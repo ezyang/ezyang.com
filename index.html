@@ -14,7 +14,7 @@
 <h1 id="name">Edward Z. Yang</h1>
 <div id="email">ezyang<span id="atsign">@</span><div id="split"><div>mit.edu</div><div>cs.stanford.edu</div></div></div>
 <div id="information">
-    <em>First year PhD student at Stanford University</em><br />
+    <em>Second year PhD student at Stanford University</em><br />
     Massachusetts Institute of Technology 2012<br />
     University of Cambridge 2011 (<a href="http://gecd.mit.edu/go_abroad/study/explore/cme">CME</a>)<br />
     <a href="ezyang-resume.pdf">Résumé</a> ∙ <a href="ezyang-cv.pdf">Curriculum Vitae</a> ∙ <a href="http://scholar.google.com/citations?user=CXlrXP8AAAAJ">Scholar</a><br />
@@ -46,7 +46,8 @@
         <td>a magazine about all things Haskell<div class="extra">(I’m editor: send me a note if you want to write something!)</div></td></tr>
 
     <tr class="blurb"><th><img src="photo.jpg" /></th><td>I am a first year PhD student at Stanford advised by <a href="http://www.scs.stanford.edu/~dm/">David Mazières</a>
-in the <a href="http://www.scs.stanford.edu/">Secure Computer Systems</a> group.
+and <a href="http://theory.stanford.edu/people/jcm/">John Mitchell</a>.  I am a proud member
+of the <a href="http://www.scs.stanford.edu/">Secure Computer Systems</a> group.
 I'm interested in applying operating system mechanisms (hardware
 isolation, dynamic resource limits) to the design and construction
 programming languages, and vice versa (type systems, formal
@@ -56,17 +57,17 @@ non-strict purely functional language.<br />
 or on any of these websites: <a href="http://stackoverflow.com/users/23845/edward-z-yang">Stack Overflow</a>, <a href="http://en.wikipedia.org/wiki/User:Edward_Z._Yang">Wikipedia</a>, <a href="https://www.tripit.com/people/ezyang">Tripit</a>, <a href="http://www.reddit.com/user/ezyang/">Reddit</a>, <a href="http://www.linkedin.com/in/ezyang">LinkedIn</a>, <a href="http://www.mendeley.com/profiles/edward-yang/">Mendeley</a>.)</small>
 </td></tr>
     <tr><td colspan="2" id="working">What are my collaborators and I working on?</td></tr>
-    <tr><th>&nbsp;</th>
-        <td>a category-theoretic approach to parallel loop optimizations
-            <div class="extra">there are a huge number of ad-hoc loop optimizations in the literature.  we're looking at using category theory to provide a framework for optimizations that is more principled than existing rewrite systems.</div></td></tr>
+    <tr><th>&nbsp;</sub></th>
+        <td>resource limits for Haskell
+        <div class="extra">while Safe Haskell offers the tantalizing ability to safely run untrusted code, it says little about time and space usage of such programs.  how can we offer the ability to bound this resource consumption at a fine-grained level?</div></tr>
 
     <tr><th>&nbsp;</th>
         <td>an investigation of the sociological principles of API design
         <div class="extra">social coding websites like GitHub offer a corpus of code of unprecedented size; with this data, can we find out how developers use APIs in practice, and how we can construct newer, safer APIs that they are likely to adopt?</div></td></tr>
 
-    <tr><th>λ<sub>P,S</sub></th>
-        <td>a programming language for computing on encrypted data
-            <div class="extra">homomorphic encryption requires computation to be oblivious: flow control can never depend on secret data.  how do you program in such a setting, and what data structures can you implement?  <a href="http://eprint.iacr.org/2011/561.pdf">Here is some prior work.</a></div></tr>
+    <tr><th>&nbsp;</th>
+        <td>a category-theoretic approach to parallel loop optimizations
+            <div class="extra">there are a huge number of ad-hoc loop optimizations in the literature.  we're looking at using category theory to provide a framework for optimizations that is more principled than existing rewrite systems.</div></td></tr>
 </table>
 
 
@@ -80,12 +81,16 @@ or on any of these websites: <a href="http://stackoverflow.com/users/23845/edwar
 <div id="working" style="margin-bottom:1em;margin-top:2em;">Recent publications</div>
 
 <ul class="papers">
+    <li>Deian Stefan, Pablo Buiras, Edward Z.Yang, Amit Levy, David Terei, Alejandro Russo and David Mazières.  <strong>Eliminating Cache-Based Timing Attacks with Instruction-Based Scheduling</strong>. In <em>Proceedings of the 18th European Symposium on Research in Computer Security (ESORICS 2013)</em>. To appear.<br />
+    [ paper | bibtex ]</li>
     <li>Erik D. Demaine, Pavel Panchekha, David Wilson, Edward Z. Yang. <strong>Blame Trees</strong>. In <em>Proceedings of the 12th International Symposium on Algorithms and Data Structures (WADS 2013).</em> To appear.<br />
     [ <a href="papers/demaine13-blametrees.pdf">draft</a> | <a href="papers/demaine13-blametrees.bib">bibtex</a> ]
-    <li>Edward Z. Yang, David Mazières. <strong>Resource Limits for Haskell</strong>. Under submission.<br />
+    <li>Edward Z. Yang, David Mazières. <strong>Resource Limits for Haskell</strong>. Unpublished.<br />
     [ <a href="papers/ezyang13-rlimits.pdf">draft</a> | <a href="papers/ezyang13-rlimits.bib">bibtex</a> | <a href="http://hackage.haskell.org/trac/ghc/wiki/Commentary/ResourceLimits">site</a> ]</li>
+    <!--
     <li>Gregory Malecha, Adam Chlipala, Thomas Braibant, Patrick Hulin, Edward Z. Yang.  <strong>Formal Verification of an Extensible Theorem Prover</strong>. Under submission.<br />
     [ draft | bibtex ]</li>
+    -->
     <li>Edward Z. Yang, Deian Stefan, John Mitchell, David Mazières, Petr Marchenko, Brad Karp. <strong>Toward Principled Browser Security</strong>. In <em>Proceedings of The 14th Workshop on Hot Topics in Operating Systems (HotOS XIV), USENIX 2013.</em> May 2013.<br />
     [ <a href="papers/ezyang13-browser.pdf">paper</a> | <a href="papers/ezyang13-browser.bib">bibtex</a> ]</li>
     <li>Edward Z. Yang. <strong>Academic software reuse, an experience report</strong>.  6.UAP report advised by Adam Chlipala. May 2012.<br />
