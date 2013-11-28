@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resource Limits for Haskell</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="screen.css" media="screen,projection" />
+</head>
+<body>
+<div id="container">
+<h1>Resource Limits for Haskell</h1>
+<div id="paperinfo">
+<a href="papers/ezyang14-rlimits.pdf">Draft (PDF)</a> ∙ <a href="papers/ezyang14-rlimits.bib">BibTeX</a> ∙ <a href="http://hackage.haskell.org/trac/ghc/wiki/Commentary/ResourceLimits">Wiki commentary (out of date)</a>
+</div>
+<div id="content">
+<div class="full">
+    <p><strong class="abstract">Abstract</strong>
+We describe the semantics and implementation of a resource limits
+system for Haskell, allowing programmers to create resource
+containers which enforce bounded resident memory usage.  Our system
+is distinguished by a clear allocator-pays semantics drawn from
+previous experience with profiling in Haskell and an implementation
+strategy which uses a block-structured heap to organize containers,
+allowing us to enforce limits with high accuracy.  To deal with the
+problem of deallocating data in a garbage collected heap, we propose
+a novel taint-based mechanism that unifies the existing practices of
+revocable pointers and killing threads in order to reclaim memory.
+Our system is implemented in GHC, a production-strength compiler for Haskell.</p>
+</div>
+<h2>History</h2>
+<div class="cb">
+    <p>We have a <a href="papers/ezyang13-rlimits.pdf">previous version
+    of the paper</a> (<a href="papers/ezyang13-rlimits.bib">BibTeX</a>), which was rejected from ICFP'13, which described
+    an old iteration of the system, which directly utilized GHC's cost-center profiling in
+    order to implement resource limits.  It was a very cute implementation, but it was
+    very costly, since it required all code to be compiled with profiling.  We've since
+    reimplemented the system to take advantage of GHC's block-structured heap, for a
+    sizeable speed increase.</p>
+</div>
+<h2>Source code</h2>
+<div class="cb">
+    <p>You can probably find the latest version of the code on <a
+    href="https://github.com/ezyang/ghc">GitHub</a> (I say "probably" because
+    I often use this repository as a dumping ground for any changes I
+    need to move around).  A more proper release will be coming soon.
+    Nota bene: I keep my fork up-to-date with upstream by repeatedly
+    rebasing.</p>
+</div>
+</body>
+</html>
