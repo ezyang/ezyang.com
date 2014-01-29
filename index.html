@@ -58,9 +58,10 @@ non-strict purely functional language.<br />
 </td></tr>
     <tr><td colspan="2" id="working">What are my collaborators and I working on?</td></tr>
     <tr><th>&nbsp;</sub></th>
-        <td>resource limits for Haskell
-        <div class="extra">while Safe Haskell offers the tantalizing ability to safely run untrusted code, it says little about time and space usage of such programs.  how can we offer the ability to bound this resource consumption at a fine-grained level?</div></tr>
+        <td>a method for adding IFC to existing programming languages
+            <div class="extra">Information-flow control is a promising discipline for enforcing the security of systems. Unfortunately, adding IFC often requires invasive changes to the semantics of the host language. We're working on a general method for adding coarse-grained IFC to a language, while requiring only minimal changes to our semantics.  Inspired by <a href="http://people.cs.uchicago.edu/~jacobm/papers/multilang/matthews-findler-popl07-bw.pdf">Matthews' and Findler's</a> work on multi-language semantics, our approach is to take a minimal IFC calculus and combine it with the target language to achieve an IFC-enabled language.  We hope to validate this approach by showing that the noninterference proof is parametric in the source of language, and that the resulting semantics accurately describe existing IFC systems.</div></tr>
 
+    <!--
     <tr><th>&nbsp;</th>
         <td>an investigation of the sociological principles of API design
         <div class="extra">social coding websites like GitHub offer a corpus of code of unprecedented size; with this data, can we find out how developers use APIs in practice, and how we can construct newer, safer APIs that they are likely to adopt?</div></td></tr>
@@ -68,6 +69,7 @@ non-strict purely functional language.<br />
     <tr><th>&nbsp;</th>
         <td>a category-theoretic approach to parallel loop optimizations
             <div class="extra">there are a huge number of ad-hoc loop optimizations in the literature.  we're looking at using category theory to provide a framework for optimizations that is more principled than existing rewrite systems.</div></td></tr>
+            -->
 </table>
 
 
@@ -86,7 +88,7 @@ non-strict purely functional language.<br />
     <li>Deian Stefan, Pablo Buiras, Edward Z. Yang, Amit Levy, David Terei, Alejandro Russo and David Mazières.  <strong>Eliminating Cache-Based Timing Attacks with Instruction-Based Scheduling</strong>. In <em>Proceedings of the 18th European Symposium on Research in Computer Security (ESORICS 2013)</em>. September 2013.<br />
     [ <a href="papers/stefan13-scheduling.pdf">paper</a> | <a href="papers/stefan13-scheduling-extended.pdf">extended</a> | bibtex ]</li>
     <li>Erik D. Demaine, Pavel Panchekha, David Wilson, Edward Z. Yang. <strong>Blame Trees</strong>. In <em>Proceedings of the 12th International Symposium on Algorithms and Data Structures (WADS 2013).</em> August 2013.<br />
-    [ <a href="papers/demaine13-blametrees.pdf">draft</a> | <a href="papers/demaine13-blametrees.bib">bibtex</a> | <a href="slides/ezyang13-blametrees-slides.pdf">slides</a> ]
+    [ <a href="papers/demaine13-blametrees.pdf">draft</a> | <a href="papers/demaine13-blametrees.bib">bibtex</a> | <a href="slides/ezyang13-blametrees-slides.pdf">slides</a> | <a href="http://youtu.be/f8e-QE6Gus8">video</a> ]
     <li>Edward Z. Yang, Deian Stefan, John Mitchell, David Mazières, Petr Marchenko, Brad Karp. <strong>Toward Principled Browser Security</strong>. In <em>Proceedings of The 14th Workshop on Hot Topics in Operating Systems (HotOS XIV), USENIX 2013.</em> May 2013.<br />
     [ <a href="papers/ezyang13-browser.pdf">paper</a> | <a href="papers/ezyang13-browser.bib">bibtex</a> ]</li>
     <li>Edward Z. Yang. <strong>Academic software reuse, an experience report</strong>.  6.UAP report advised by Adam Chlipala. May 2012.<br />
