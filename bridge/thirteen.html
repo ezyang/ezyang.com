@@ -1,0 +1,44 @@
+<html>
+<body>
+<script type="text/javascript">
+function run() {
+    //console.log(event);
+    var i;
+    var vs = [];
+    var is = [];
+    var sum = 0;
+    for (i = 0; i < 4; i++) {
+        vs[i] = 0;
+        is[i] = document.getElementById("i" + i.toString());
+        sum += parseInt(is[i].value);
+    }
+    if (sum == 13) {
+        document.getElementById("ok").value++;
+    } else {
+        document.getElementById("fail").value++;
+    }
+    for (i = 0; i < 13; i++) {
+        vs[Math.floor(Math.random() * 4)]++;
+    }
+    for (i = 0; i < 3; i++) {
+        is[i].value = vs[i].toString();
+    }
+    is[3].value = "";
+}
+</script>
+<div>
+    <input id="i0" type="text" size="2" readonly />
+    <input id="i1" type="text" size="2" readonly />
+    <input id="i2" type="text" size="2" readonly />
+    <input id="i3" type="text" size="2" onkeypress="setTimeout(run,0);" />
+</div>
+<div style="margin:1em">
+    <input id="ok" style="background:#9F9" size="2" />
+    <input id="fail" style="background:#F99" size="2" />
+    <script>
+        document.getElementById("ok").value = "0";
+        document.getElementById("fail").value = "0";
+    </script>
+</div>
+</body>
+</html>
