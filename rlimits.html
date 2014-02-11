@@ -43,20 +43,6 @@ Our system is implemented in GHC, a production-strength compiler for Haskell.</p
 <h2>FAQ</h2>
 <div class="cb">
 
-    <p><strong>I don't use Haskell.  Why should I care?</strong></p>
-    <p>
-    If you are an implementor of any programming language, you might
-    still be interested in the technique used in this paper.  The core
-    of our implementation relies only on a
-    <a href="http://research.microsoft.com/en-us/um/people/simonpj/papers/parallel-gc/">block structured heap</a>,
-    which allows us to create many regions in the heap
-    quite cheaply.  Your language probably doesn't use a block structured
-    heap, but you should consider it: the design is very flexible, and
-    in retrospect has been considered one of the "best decisions"
-    to have been made for Haskell's storage manager.  Haskell presents
-    both challenges and opportunities for our system, but the underlying
-    technique is quite general.</p>
-
     <p><strong>Why not use an OS mechanism like rlimits?</strong></p><p>
     Mechanisms like rlimits work well in many cases, but they impose conceptual
     and runtime overhead.  The conceptual overhead comes from needing to restructure
@@ -65,6 +51,42 @@ Our system is implemented in GHC, a production-strength compiler for Haskell.</p
     comes from the overhead of processes and inter-process communication; in
     a single-runtime system like ours there is no overhead beyond cache effects.
     </p>
+
+    <p><strong>I don't use Haskell.  Why should I care?</strong></p>
+    <p>
+    It's easy to conclude that this paper is Haskell-specific, what with
+    “Haskell” being in the title and all.  However, it is
+    worth talking more carefully about what specific features of Haskell
+    our system relies on. In order of increasing specificity to Haskell, we rely on: (1) the
+    ability to create multiple regions in the heap cheaply (<a href="http://research.microsoft.com/en-us/um/people/simonpj/papers/parallel-gc/">a
+        block-structured heap</a>), (2) the ability to safely terminate threads
+    (<a href="http://community.haskell.org/~simonmar/papers/async.pdf">asynchronous exceptions</a>), and (3) the ability to statically isolate
+    code (restricted monads/<a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/safe-haskell.html">Safe Haskell</a>).
+    </p>
+    <p>The first condition is not at all specific to Haskell, and is
+    really all you need to get half of our resource limits system (tracking
+    of consumed memory).  Block-structured heaps are well worth considering
+    the next time you need to write a memory system: the design is very flexible, and
+    in retrospect has been considered one of the "best decisions"
+    to have been made for Haskell's storage manager.</p>
+    <p>The second condition is not specific to Haskell per se, but Haskell's
+    purity and culture of using <code>bracket</code> makes it far more
+    reasonable to assume that arbitrary code will be able to recover
+    from being killed by an asynchronous exception.  This may not be true in
+    languages like Java, where resource limits systems like <a href="https://www.usenix.org/legacy/events/osdi02/tech/full_papers/hawblitzel/hawblitzel_html/index.html">Luna</a>
+    specifically avoid killing threads.  Still, we think most would
+    argue that asynchronous exceptions (which work well) are a desirable feature
+    to have in any language.</p>
+    <p>The final condition is rather Haskell specific.  While in principle this
+    API could be implemented in any language, the inability to enforce
+    its usage in the type system could lead to difficult to diagnose
+    leaks of references.  Monads in Haskell help us a lot here, and the ability
+    to run untrusted code using Safe Haskell provides a compelling use-case
+    for resource limits. We freely admit that we are taking advantages of
+    Haskell's circumstances.</p>
+    <p>It's worth noting that our implementation does not rely on laziness:
+    while handling it is a technical result, without it the implementation can be
+    simplified in the obvious way.</p>
 
 </div>
 <h2>History</h2>
