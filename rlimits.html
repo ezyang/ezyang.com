@@ -26,6 +26,47 @@ a novel taint-based mechanism that unifies the existing practices of
 revocable pointers and killing threads in order to reclaim memory.
 Our system is implemented in GHC, a production-strength compiler for Haskell.</p>
 </div>
+<h2>Code</h2>
+<div class="cb">
+    <p>We are participating in the PLDI'14 artifact evaluation process,
+    so if you are interested in trying out our system with minimal
+    fuss, check out our <a href="https://github.com/ezyang/pldi14-rlimits-aec">artifact
+        description page</a> for a ready-made VM image, a tutorial and evaluation code
+    from the paper.
+    </p>
+    <p>To get and compile the code yourself, check the <code>ghc-rlimits-20130210</code>
+    tag of <a href="https://github.com/ezyang/ghc/tree/ghc-rlimits-20130210">ghc</a>
+    and <a href="https://github.com/ezyang/packages-integer-gmp/commit/26d4064328ba8e62aa4d218c2367ceb22c2169a9">this patch to integer-gmp</a> (set your other branches to <code>ghc-7.8</code>).  The compilation process is the same
+    as for <a href="https://ghc.haskell.org/trac/ghc/wiki/Building">normal GHC</a>, with the caveat that it will not work
+    for 32-bit platforms.</p>
+</div>
+<h2>FAQ</h2>
+<div class="cb">
+
+    <p><strong>I don't use Haskell.  Why should I care?</strong></p>
+    <p>
+    If you are an implementor of any programming language, you might
+    still be interested in the technique used in this paper.  The core
+    of our implementation relies only on a
+    <a href="http://research.microsoft.com/en-us/um/people/simonpj/papers/parallel-gc/">block structured heap</a>,
+    which allows us to create many regions in the heap
+    quite cheaply.  Your language probably doesn't use a block structured
+    heap, but you should consider it: the design is very flexible, and
+    in retrospect has been considered one of the "best decisions"
+    to have been made for Haskell's storage manager.  Haskell presents
+    both challenges and opportunities for our system, but the underlying
+    technique is quite general.</p>
+
+    <p><strong>Why not use an OS mechanism like rlimits?</strong></p><p>
+    Mechanisms like rlimits work well in many cases, but they impose conceptual
+    and runtime overhead.  The conceptual overhead comes from needing to restructure
+    an application into multiple processes to apply per-process limits: a mechanism
+    that is built into a language is much easier to use.  The runtime overhead
+    comes from the overhead of processes and inter-process communication; in
+    a single-runtime system like ours there is no overhead beyond cache effects.
+    </p>
+
+</div>
 <h2>History</h2>
 <div class="cb">
     <p>We have a <a href="papers/ezyang13-rlimits.pdf">previous version
@@ -35,15 +76,6 @@ Our system is implemented in GHC, a production-strength compiler for Haskell.</p
     very costly, since it required all code to be compiled with profiling.  We've since
     reimplemented the system to take advantage of GHC's block-structured heap, for a
     sizeable speed increase.</p>
-</div>
-<h2>Source code</h2>
-<div class="cb">
-    <p>You can probably find the latest version of the code on <a
-    href="https://github.com/ezyang/ghc">GitHub</a> (I say "probably" because
-    I often use this repository as a dumping ground for any changes I
-    need to move around).  A more proper release will be coming soon.
-    Nota bene: I keep my fork up-to-date with upstream by repeatedly
-    rebasing.</p>
 </div>
 </body>
 </html>
