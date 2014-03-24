@@ -74,21 +74,58 @@ place if this paper is accepted.
 
                          ===== Paper summary =====
 
-This paper explores the eternal "flexibility vs. security" conundrum in the context of web browsers handling content and web apps. It proposes the use of information flow control primitives as an all-encompassing language for describing security policies in this context. The authors show how the label lattice in IFC along with the declassification operation can be used to expressed common policies that exist today, as well as further policies that may be customized to in-browser web apps.
+This paper explores the eternal "flexibility vs. security" conundrum in
+the context of web browsers handling content and web apps. It proposes
+the use of information flow control primitives as an all-encompassing
+language for describing security policies in this context. The authors
+show how the label lattice in IFC along with the declassification
+operation can be used to expressed common policies that exist today, as
+well as further policies that may be customized to in-browser web apps.
 
                       ===== Comments for author =====
 
-The proposal of using IFC as a language for specifying security policies is new to me, though I don't follow this area; it sounds like a clean, elegant idea, modulo the practicality of implementing it efficiently. In fact, the paper says absolutely nothing about how this might be implemented in a real browser.
+The proposal of using IFC as a language for specifying security policies
+is new to me, though I don't follow this area; it sounds like a clean,
+elegant idea, modulo the practicality of implementing it efficiently. In
+fact, the paper says absolutely nothing about how this might be
+implemented in a real browser.
 
-The granularity at which the policy is to be enforced now becomes arbitrarily fine (byte level). The paper does not touch upon the implications this has on the implementation (in terms of performance, reliability, ...)?
+The granularity at which the policy is to be enforced now becomes
+arbitrarily fine (byte level). The paper does not touch upon the
+implications this has on the implementation (in terms of performance,
+reliability, ...)?
 
-I liked the argument made for wide applicability. But it would have been nice to see a more principled discussion of the completeness of this IFC-based language: Can all policies be expressed with it? Does it impose undue restrictions on what can be formulated? (restrictions themselves are not bad, SOP itself is a restriction, but I cannot tell whether IFC introduces a potentially showstopper-type of problem)
+I liked the argument made for wide applicability. But it would have been
+nice to see a more principled discussion of the completeness of this
+IFC-based language: Can all policies be expressed with it? Does it
+impose undue restrictions on what can be formulated? (restrictions
+themselves are not bad, SOP itself is a restriction, but I cannot tell
+whether IFC introduces a potentially showstopper-type of problem)
 
-It's nice that web apps can define custom policies. It's unclear though who exactly has the write to define these policies, and whom can these policies affect? Could a third-party app redefine the policies that are in effect inside a browser? The paper seems to imply yes, but surely the authors do not believe that. How does one reason about conflicting policies?
+It's nice that web apps can define custom policies. It's unclear though
+who exactly has the write to define these policies, and whom can these
+policies affect? Could a third-party app redefine the policies that are
+in effect inside a browser? The paper seems to imply yes, but surely the
+authors do not believe that. How does one reason about conflicting
+policies?
 
-I found the example involving reading a browser's history by exploiting the CSS ":visited" selector value confusing. The authors seem to be implying that, in an IFC-based policy, labeling the :visited information <canRead=user://> would make the leak explicit (which I agree), but then they turn around and say that declassification is not safe, so it shouldn't be used, and getComputedStyle() should fail. Is this advocating that the IFC-based language for expressing policies not allow such explicit leaks, or is this just expressing the authors' opinion on how the language should or should not be used?
+I found the example involving reading a browser's history by exploiting
+the CSS ":visited" selector value confusing. The authors seem to be
+implying that, in an IFC-based policy, labeling the :visited information
+<canRead=user://> would make the leak explicit (which I agree), but then
+they turn around and say that declassification is not safe, so it
+shouldn't be used, and getComputedStyle() should fail. Is this
+advocating that the IFC-based language for expressing policies not allow
+such explicit leaks, or is this just expressing the authors' opinion on
+how the language should or should not be used?
 
-The writing is annoyingly sloppy, almost enough to make me downgrade my score. The paper often says the exact opposite of what it should (such as swapping hostnames when explaining flows, mixing up operators, etc.). Authors cut the conclusions and tried to jam into the 5 pages more than was due (in other words, making us read more about this topic than we should have); one could easily have trimmed Section 3 to accomplish this.
+The writing is annoyingly sloppy, almost enough to make me downgrade my
+score. The paper often says the exact opposite of what it should (such
+as swapping hostnames when explaining flows, mixing up operators, etc.).
+Authors cut the conclusions and tried to jam into the 5 pages more than
+was due (in other words, making us read more about this topic than we
+should have); one could easily have trimmed Section 3 to accomplish
+this.
 
 ===========================================================================
                            HotOS XIV Review #16C
@@ -108,15 +145,42 @@ The writing is annoyingly sloppy, almost enough to make me downgrade my score. T
 
                          ===== Paper summary =====
 
-The authors describe how Web browsers' security policies can be expressed using information flow control (IFC), and argue that implementing it that way---i.e., using formal IFC specification and enforcement---would lead to a more secure browsing experience.
+The authors describe how Web browsers' security policies can be
+expressed using information flow control (IFC), and argue that
+implementing it that way---i.e., using formal IFC specification and
+enforcement---would lead to a more secure browsing experience.
 
                       ===== Comments for author =====
 
-In many ways, this paper is unsurprising.  IFC is the power tool of security: most useful policies can indeed be expressed in a suitably nuanced IFC framework.  The catch, of course, is whether the IFC system can be implemented in an efficient fashion, and, critically, whether programmers can be trusted to understand their needs and the formalism well enough to provide accurate specifications for the framework to enforce.  Indeed, the authors are not the first to make this observation: the FlowFox work from CCS applies IFC to the browser.  This manuscript simply argues for taking the approach to its logical conclusion and implementing the entire set of browser security policies---as opposed to those focused on scripting---through IFC machinery.
+In many ways, this paper is unsurprising.  IFC is the power tool of
+security: most useful policies can indeed be expressed in a suitably
+nuanced IFC framework.  The catch, of course, is whether the IFC system
+can be implemented in an efficient fashion, and, critically, whether
+programmers can be trusted to understand their needs and the formalism
+well enough to provide accurate specifications for the framework to
+enforce.  Indeed, the authors are not the first to make this
+observation: the FlowFox work from CCS applies IFC to the browser.  This
+manuscript simply argues for taking the approach to its logical
+conclusion and implementing the entire set of browser security
+policies---as opposed to those focused on scripting---through IFC
+machinery.
 
-Section 4 enumerates a number of potential benefits of IFC for web apps, but it seems to presume that the authors of these apps know precisely how to describe the IFC control they desire.  Clearly they can always test to make sure the encoded policy is not too strict (it won't work properly if so), but there doesn't seem to be an obvious way for them to test whether or not the policy is too loose, which seems likely to lead to a scenario where authors have a small handful of "default policies" that they (think they) understand, and to just blindly apply one or more of those to each app until it works, rather than being thoughtful and constructing the precise policy for each use in a new application.
+Section 4 enumerates a number of potential benefits of IFC for web apps,
+but it seems to presume that the authors of these apps know precisely
+how to describe the IFC control they desire.  Clearly they can always
+test to make sure the encoded policy is not too strict (it won't work
+properly if so), but there doesn't seem to be an obvious way for them to
+test whether or not the policy is too loose, which seems likely to lead
+to a scenario where authors have a small handful of "default policies"
+that they (think they) understand, and to just blindly apply one or more
+of those to each app until it works, rather than being thoughtful and
+constructing the precise policy for each use in a new application.
 
-As a non-expert, I would have greatly appreciated a related work section that explicitly compared the approach being advocated to that provided by seemingly similar systems, some of which have been built by a subset of the authors.  For example, how does his compare/extend/contrast with Hails?
+As a non-expert, I would have greatly appreciated a related work section
+that explicitly compared the approach being advocated to that provided
+by seemingly similar systems, some of which have been built by a subset
+of the authors.  For example, how does his compare/extend/contrast with
+Hails?
 
 ===========================================================================
                            HotOS XIV Review #16D
@@ -217,15 +281,37 @@ https://b.com but the first should be a.com.
 
                          ===== Paper summary =====
 
-This paper makes a case for writing browsers that strictly enforce decentralized information flow control. The authors argue that many of today’s browser security policies, such as Single-Origin Policy, and Cross-Origin Resource Sharing, can be straightforwardly expressed in terms of DIFC with strategic use (by the trusted browser) of declassification. The authors provide several examples to justify their claim, and proceed to explain how web applications themselves can benefit from such a DIFC browser infrastructure to give app developers a stronger environment to develop for.
+This paper makes a case for writing browsers that strictly enforce
+decentralized information flow control. The authors argue that many of
+today’s browser security policies, such as Single-Origin Policy, and
+Cross-Origin Resource Sharing, can be straightforwardly expressed in
+terms of DIFC with strategic use (by the trusted browser) of
+declassification. The authors provide several examples to justify their
+claim, and proceed to explain how web applications themselves can
+benefit from such a DIFC browser infrastructure to give app developers a
+stronger environment to develop for.
 
                       ===== Comments for author =====
 
-This paper is not very well written. The language is almost uniformly poor, there are disturbingly many typos, several examples are botched (as far as I can tell) due to poor proof reading, and many concepts are used before they are defined, or are never defined at all. (The last bit is rather ironic for a security paper)
+This paper is not very well written. The language is almost uniformly
+poor, there are disturbingly many typos, several examples are botched
+(as far as I can tell) due to poor proof reading, and many concepts are
+used before they are defined, or are never defined at all. (The last bit
+is rather ironic for a security paper)
 
-On its main points, the paper does make sense. The authors did convince me that existing browser security policies are information-flow policies, and can be expressed, with a bit of tricky declassification glue logic, in terms of labels.
+On its main points, the paper does make sense. The authors did convince
+me that existing browser security policies are information-flow
+policies, and can be expressed, with a bit of tricky declassification
+glue logic, in terms of labels.
 
-That was a worthwhile insight, but I’m not sure it was enough of a contribution to merit publication, however. It covered possibility, but not tractability. The authors didn’t talk about the implications of rewriting today’s browsers---bursting with features---as DIFC systems. Would the rewrite be a strictly positive change? Anything that wouldn’t be quite as easy (or that wouldn’t perform well)? Overall, the paper reads a bit like a case study for DIFC in the browser, and gave me little else.
+That was a worthwhile insight, but I’m not sure it was enough of a
+contribution to merit publication, however. It covered possibility, but
+not tractability. The authors didn’t talk about the implications of
+rewriting today’s browsers---bursting with features---as DIFC systems.
+Would the rewrite be a strictly positive change? Anything that wouldn’t
+be quite as easy (or that wouldn’t perform well)? Overall, the paper
+reads a bit like a case study for DIFC in the browser, and gave me
+little else.
  
 
 
@@ -233,23 +319,49 @@ Editorial
 
 What are CORS and CSP? Spell out before first use.
 
-The introduction confused me somewhat with respect to what we trust developers to do. It sounds like a developer should be able to extend/otherwise modify the browser’s policy to suit his needs. That doesn’t sound safe, in the general case. Would it make more sense to say that the browser (or the end user) decides on a browser policy (e.g., SOP or one of the others) and, to the extent possible, developers can *parametrize* that policy for their applications (as with CSRF)? I certainly wouldn’t want a developer to turn off SOP unilaterally on my browser.
+The introduction confused me somewhat with respect to what we trust
+developers to do. It sounds like a developer should be able to
+extend/otherwise modify the browser’s policy to suit his needs. That
+doesn’t sound safe, in the general case. Would it make more sense to say
+that the browser (or the end user) decides on a browser policy (e.g.,
+SOP or one of the others) and, to the extent possible, developers can
+*parametrize* that policy for their applications (as with CSRF)? I
+certainly wouldn’t want a developer to turn off SOP unilaterally on my
+browser.
 
-It would be helpful to point out how related work that focused on scripting is lacking towards the authors’ goal here. Is the policy customization outside of scripts a large, complex space that would benefit from using a common, principled framework to express? Or is scripting the main source of trouble?
+It would be helpful to point out how related work that focused on
+scripting is lacking towards the authors’ goal here. Is the policy
+customization outside of scripts a large, complex space that would
+benefit from using a common, principled framework to express? Or is
+scripting the main source of trouble?
 
-In the fundamentals, the authors should explain what logical connectives denote. I understand what disjunction of categories denotes, but what does conjunction denote (bottom left of page 2)?
+In the fundamentals, the authors should explain what logical connectives
+denote. I understand what disjunction of categories denotes, but what
+does conjunction denote (bottom left of page 2)?
 
-In the middle of page 2, left, I get a mixed message that the authors advocate implicit tainting of the current label, which is probably not good for privacy. But then the same paragraph makes it sound as if the current label must be modified explicitly before reads are allowed. I’m guessing it’s the latter, but some rewriting of “...by accumulating taint...” might resolve the potential for confusion.
+In the middle of page 2, left, I get a mixed message that the authors
+advocate implicit tainting of the current label, which is probably not
+good for privacy. But then the same paragraph makes it sound as if the
+current label must be modified explicitly before reads are allowed. I’m
+guessing it’s the latter, but some rewriting of “...by accumulating
+taint...” might resolve the potential for confusion.
 
-Footnote 1 seems to be broken, or perhaps I don’t understand why a label can have canRead twice.
+Footnote 1 seems to be broken, or perhaps I don’t understand why a label
+can have canRead twice.
 
 Page 3
 
-The subtlety of the intended recipient for messages should be summarized briefly here.
+The subtlety of the intended recipient for messages should be summarized
+briefly here.
 
-I don’t know the details of the postMessage policy, but I can’t see how it stipulates inner-most frames should not be able to read messages. Is the text at the bottom left of the page intended to mean “given that b.com changed the innermost frame, that frame shouldn’t be able to read the message, as per the postMessage policy” or some such?
+I don’t know the details of the postMessage policy, but I can’t see how
+it stipulates inner-most frames should not be able to read messages. Is
+the text at the bottom left of the page intended to mean “given that
+b.com changed the innermost frame, that frame shouldn’t be able to read
+the message, as per the postMessage policy” or some such?
 
-On the left side of the page, how can the inner-most frame (originating at b.com) violate b.com’s confidentiality by reading a message?
+On the left side of the page, how can the inner-most frame (originating
+at b.com) violate b.com’s confidentiality by reading a message?
 
 Page 4
 
@@ -257,7 +369,11 @@ What does this label mean? canRead=https://b.com \/ https://b.com
 
 Page 5
 
-The statement “Since SOP does not generally prevent pages from initiating arbitrary cross-origin requests,...” surprised me. If the subtlety is in “initiating” rather than “completing” requests, the authors should make it a bit more explicit, and explain what happens in initiation of a request (that SOP will not allow to complete). 
+The statement “Since SOP does not generally prevent pages from
+initiating arbitrary cross-origin requests,...” surprised me. If the
+subtlety is in “initiating” rather than “completing” requests, the
+authors should make it a bit more explicit, and explain what happens in
+initiation of a request (that SOP will not allow to complete). 
 
 References
 
@@ -268,14 +384,24 @@ Several are missing a venue.
                                   Comment
                Paper #16: Toward Principled Browser Security
 ---------------------------------------------------------------------------
-The discussion of this paper was broadly positive, however there were several points that you would do well to address in preparing your revised version of the paper.  First, there has been a lot of browser+IFC work.  A bunch of the PC discussion was around whether this was different enough from previos work in this area, so it would be helpful to have a more concise explanation of that.  Similarly, more discussions of the limitations of the system and, for instance, the opportunities to integrate IFC between client and server and the consequences of not being able to do that would be helpful.
+The discussion of this paper was broadly positive, however there were
+several points that you would do well to address in preparing your
+revised version of the paper.  First, there has been a lot of
+browser+IFC work.  A bunch of the PC discussion was around whether this
+was different enough from previos work in this area, so it would be
+helpful to have a more concise explanation of that.  Similarly, more
+discussions of the limitations of the system and, for instance, the
+opportunities to integrate IFC between client and server and the
+consequences of not being able to do that would be helpful.
 
 Self-Exfiltration: The Dangers of Browser-Enforced Information Flow Control 
 (http://www.w2spconf.com/2012/papers/w2sp12-final11.pdf) 
 
 Might be worth discussing in this context.
 
-Based on the discussion, IFC as a tool to write security policy for browsers was very clearly the most interesting part of the paper to many of the reviewers.
+Based on the discussion, IFC as a tool to write security policy for
+browsers was very clearly the most interesting part of the paper to many
+of the reviewers.
 
 
 

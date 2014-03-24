@@ -400,25 +400,46 @@ High level points:
 
 Detailed comments
 
-para 2: what's the point you're making here?  I thought it was that the functional abstraction is leaky, but the paragraph went on to say that we spend a lot of time optimising functional code to counter the criticism that functional code is slow.  These two points seem unrelated to me.
+para 2: what's the point you're making here?  I thought it was that the
+functional abstraction is leaky, but the paragraph went on to say that
+we spend a lot of time optimising functional code to counter the
+criticism that functional code is slow.  These two points seem unrelated
+to me.
 
 "On the other hand" - what was the first hand?
 
-para 3: conventional wisdom has a point, because profiling can impose non-trivial overheads on execution time and space usage, and reduce parallelism.
+para 3: conventional wisdom has a point, because profiling can impose
+non-trivial overheads on execution time and space usage, and reduce
+parallelism.
 
 para 4: you haven't motivated the use of resource limits yet.
 
-Your section references e.g. "(Section 3)" should be before the full stops (several instances).
+Your section references e.g. "(Section 3)" should be before the full
+stops (several instances).
 
 "The choice GHC has currently adopted for scc is dynamic scoping."
-The Sansom semantics had flat cost centres only, but GHC has since been extended to model stacks.  So I don't think you can say that GHC's semantics is equivalent to either Sansom's lexical or dynamic scoping, although it is closer to lexical scoping because (\x . scc "f" E) is equivalent to (scc "f" \x. E).  For a while we thought that evaluation scoping was the right solution, but I since discovered that it has some bad properties, and the current situation is the scheme that you see implemented in enterFunCCS() in rts/Profiling.c.  I've given a couple of talks about this (most recently in the Haskell Implementors Workshop 2012), but there's nothing published.  Some slides explaining the problems are here:
+The Sansom semantics had flat cost centres only, but GHC has since been
+extended to model stacks.  So I don't think you can say that GHC's
+semantics is equivalent to either Sansom's lexical or dynamic scoping,
+although it is closer to lexical scoping because (\x . scc "f" E) is
+equivalent to (scc "f" \x. E).  For a while we thought that evaluation
+scoping was the right solution, but I since discovered that it has some
+bad properties, and the current situation is the scheme that you see
+implemented in enterFunCCS() in rts/Profiling.c.  I've given a couple of
+talks about this (most recently in the Haskell Implementors Workshop
+2012), but there's nothing published.  Some slides explaining the
+problems are here:
 
 http://community.haskell.org/~simonmar/Stack-traces.pdf
 
 
-3.2: If a resource limit is exceeded and the listener is triggered, is the original thread suspended?  Might that cause a deadlock?  What if it gets suspended while holding a lock, or making a foreign call?
+3.2: If a resource limit is exceeded and the listener is triggered, is
+the original thread suspended?  Might that cause a deadlock?  What if it
+gets suspended while holding a lock, or making a foreign call?
 
-3.3: I'm somewhat surprised that you can have copy :: a -> a.  I'd expect compiler optimisations to eliminate the copying.  How do you avoid that?
+3.3: I'm somewhat surprised that you can have copy :: a -> a.  I'd
+expect compiler optimisations to eliminate the copying.  How do you
+avoid that?
 
 "can enforces" -> "can enforce"
 
@@ -426,14 +447,33 @@ http://community.haskell.org/~simonmar/Stack-traces.pdf
 
 The call to withCC in sandboxFun doesn't type-check.  I'm a bit confused here.
 
-3.3: I think this section is missing motivation.  It would really help the reader's intuition to have a concrete example to put these ideas into context.  I'm not sure how to evaluate whether what you have proposed here is a good idea, whether there are other ways to do it, or whether you need this level of complexity at all.  Under what circumstances might you need multiple threads with different cost centres to share mutable references?
+3.3: I think this section is missing motivation.  It would really help
+the reader's intuition to have a concrete example to put these ideas
+into context.  I'm not sure how to evaluate whether what you have
+proposed here is a good idea, whether there are other ways to do it, or
+whether you need this level of complexity at all.  Under what
+circumstances might you need multiple threads with different cost
+centres to share mutable references?
 
-Figure 2: As mentioned earlier, you're basing this unfortunately on a semantics that doesn't correspond to what GHC implements.  I'm slightly surprised that you didn't notice this when experimenting with your system.  In particular, you can't ignore cost centre stacks - adding stacks is a core part of the semantics, not something you can treat orthogonally. Unfortunately I don't know what the right cost semantics for stacks is.  Perhaps what you should do is modify GHC to implement your semantics - bear in mind that there are two places where this matters: in the RTS and in the simplifier when manipulating expressions with sccs.
+Figure 2: As mentioned earlier, you're basing this unfortunately on a
+semantics that doesn't correspond to what GHC implements.  I'm slightly
+surprised that you didn't notice this when experimenting with your
+system.  In particular, you can't ignore cost centre stacks - adding
+stacks is a core part of the semantics, not something you can treat
+orthogonally. Unfortunately I don't know what the right cost semantics
+for stacks is.  Perhaps what you should do is modify GHC to implement
+your semantics - bear in mind that there are two places where this
+matters: in the RTS and in the simplifier when manipulating expressions
+with sccs.
 
 Your let-floating example has a mistake: the last line should be "withCC cc fn".
 
 I don't understand why you think there's a problem with let-floating.
-(f n) is a function, so it can be floated anywhere: the cost centre used when it is applied will be the one from the call site, which is inside withCC. (this is the case both for evaluation scoping and for GHC's more complex semantics, which is designed such that both let-floating and inlining are semantics-preserving).
+(f n) is a function, so it can be floated anywhere: the cost centre used
+when it is applied will be the one from the call site, which is inside
+withCC. (this is the case both for evaluation scoping and for GHC's more
+complex semantics, which is designed such that both let-floating and
+inlining are semantics-preserving).
 
 If your withcc expression form has the following type:
 
@@ -447,11 +487,15 @@ then you don't need to give a semantics to withcc at all.
 
 This section on let-floating belongs in your implementation section.
 
-Since you have a cost semantics, can you say anything formal about the behaviour of resource limits?
+Since you have a cost semantics, can you say anything formal about the
+behaviour of resource limits?
 
-5.1.  So I see that you implemented evaluation scoping.  However, you probably didn't update the transformations in the simplifier to respect this change in the semantics, right?
+5.1.  So I see that you implemented evaluation scoping.  However, you
+probably didn't update the transformations in the simplifier to respect
+this change in the semantics, right?
 
-Furthermore, wouldn't you have to change scc so that it doesn't push on the stack, but just sets the current cost centre?
+Furthermore, wouldn't you have to change scc so that it doesn't push on
+the stack, but just sets the current cost centre?
 
 "tracing and eliminate overhead"
 
@@ -461,9 +505,12 @@ The transformation
 
    scc f (\x . e) => \x . scc f e
 
-is *not* valid under evaluation scoping, and GHC will perform this transformation (see CoreUtils.mkTick for details).  As far as I know they didn't disable this transformation.
+is *not* valid under evaluation scoping, and GHC will perform this
+transformation (see CoreUtils.mkTick for details).  As far as I know
+they didn't disable this transformation.
 
 They might have set things up so that it just about works, by using
-withCC1 (with NOLINLINE?), and not having any other sccs in the program. 
-But it's a fragile setup, and given that their semantics includes scc I'd expect their implementation to work too.
+withCC1 (with NOLINLINE?), and not having any other sccs in the program.
+But it's a fragile setup, and given that their semantics includes scc
+I'd expect their implementation to work too.
 

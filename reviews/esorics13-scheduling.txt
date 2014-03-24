@@ -1,8 +1,19 @@
-We are pleased to inform you that your submission to ESORICS 2013, "Eliminating Cache-Based Timing Attacks with Instruction-Based Scheduling", has been accepted.  The conference was extremely competitive this year, with 43 papers out of 242 being accepted, an acceptance rate of around 18%.
+We are pleased to inform you that your submission to ESORICS 2013,
+"Eliminating Cache-Based Timing Attacks with Instruction-Based
+Scheduling", has been accepted.  The conference was extremely
+competitive this year, with 43 papers out of 242 being accepted, an
+acceptance rate of around 18%.
 
-The reviews for your paper are appended to this email. Please ensure that you address the reviewers' comments when preparing your camera-ready copy. The deadline for the submission of camera-ready copy is 21 June. Further details about the preparation and submission of camera-ready copy will follow shortly.
+The reviews for your paper are appended to this email. Please ensure
+that you address the reviewers' comments when preparing your
+camera-ready copy. The deadline for the submission of camera-ready copy
+is 21 June. Further details about the preparation and submission of
+camera-ready copy will follow shortly.
 
-At least one author is expected to register for the conference (at the full delegate rate) and present the paper.  Further instructions concering registration are available at http://esorics2013.isg.rhul.ac.uk/registration/.
+At least one author is expected to register for the conference (at the
+full delegate rate) and present the paper.  Further instructions
+concering registration are available at
+http://esorics2013.isg.rhul.ac.uk/registration/.
 
 Best wishes
 
@@ -18,16 +29,22 @@ AUTHORS: Deian Stefan, Pablo Buiras, Edward Yang, Amit Levy, David Terei, Alejan
 
 
 ----------- REVIEW -----------
-This paper uses performance counters to control thread scheduling in a way that ensures that an information-leak channel 
-cannot be established due to cache timing effects.  This approach is intuitive and will work as the authors described.  
+This paper uses performance counters to control thread scheduling in a
+way that ensures that an information-leak channel cannot be established
+due to cache timing effects.  This approach is intuitive and will work
+as the authors described.  
 
-The use of "safe to context switch" markers inserted into the code to avoid context switching at inopportune moments is 
-a clever addition that will work in a managed environment such as the one the authors target.  The mechanism precludes 
-simple use of profiling tools while it is in use (because performance counters are limited in systems), however, this is 
-unlikely to be a real problem because the scheduler can be reverted to its "original" for the time of profiling.
+The use of "safe to context switch" markers inserted into the code to
+avoid context switching at inopportune moments is a clever addition that
+will work in a managed environment such as the one the authors target.
+The mechanism precludes simple use of profiling tools while it is in use
+(because performance counters are limited in systems), however, this is
+unlikely to be a real problem because the scheduler can be reverted to
+its "original" for the time of profiling.
 
-=46rom a systems perspective, this work is kind of obvious up front that it will work, and it's just a matter of picking 
-a system and implementing the technique (which the authors do).
+From a systems perspective, this work is kind of obvious up front that
+it will work, and it's just a matter of picking a system and
+implementing the technique (which the authors do).
 
 Lets see it, why not.
 

@@ -247,27 +247,54 @@ AUTHORS: Edward Yang and David Mazieres
 OVERALL SCORE: 0 (met expectations)
 
 ----------- BRIEF PAPER SUMMARY AND CONTRIBUTIONS -----------
-This paper describes how to add fine-grained resource limits to Haskell. In this case, the authors considered memory usage. Current approaches for establishing resource limits are fairly course grained, either at the OS level or through Haskell APIs. One problem with this approach is that limits can only be applied at a course grain, such as at the level of processes.
+This paper describes how to add fine-grained resource limits to Haskell.
+In this case, the authors considered memory usage. Current approaches
+for establishing resource limits are fairly course grained, either at
+the OS level or through Haskell APIs. One problem with this approach is
+that limits can only be applied at a course grain, such as at the level
+of processes.
 
-The authors present a modification to the Haskell runtime, as well as a new resource container API that allows programmers to set memory limits on particular sections of code. The paper includes a semantics for the STG language with these new resource limits and an evaluation of how well their system enforces the desired limits.
+The authors present a modification to the Haskell runtime, as well as a
+new resource container API that allows programmers to set memory limits
+on particular sections of code. The paper includes a semantics for the
+STG language with these new resource limits and an evaluation of how
+well their system enforces the desired limits.
 
 ----------- ARTIFACT SUMMARY -----------
-The artifact consists of a Github repo containing source code for several examples that were used in the paper. The README includes links to the paper, a virtual hard disk image and the Github repo for the rlimits support library.
+The artifact consists of a Github repo containing source code for
+several examples that were used in the paper. The README includes links
+to the paper, a virtual hard disk image and the Github repo for the
+rlimits support library.
 
-The hard disk contains their modified Haskell pre-installed, the rlimits library, several rlimits examples, and the source code from the artifact's repository.
+The hard disk contains their modified Haskell pre-installed, the rlimits
+library, several rlimits examples, and the source code from the
+artifact's repository.
 
 ----------- ARTIFACT PACKAGING AND REPRODUCIBILITY -----------
-I was able to get the virtual machine running and building the provided software. For the most part, everything ran as expected.
+I was able to get the virtual machine running and building the provided
+software. For the most part, everything ran as expected.
 
 ----------- ARTIFACT IMPLEMENTATION AND USABILITY -----------
-I appreciate that the VM image includes the modifications to ghc already installed. The script to generate Figure 6 from the paper was a nice touch as well. Distributing the artifact via Github provides an easy way for me to quickly browse the files and see, for example, what changes were needed in ghc.
+I appreciate that the VM image includes the modifications to ghc already
+installed. The script to generate Figure 6 from the paper was a nice
+touch as well. Distributing the artifact via Github provides an easy way
+for me to quickly browse the files and see, for example, what changes
+were needed in ghc.
 
 ----------- DETAILED EVALUATION AND SCORE JUSTIFICATION -----------
-I did most of my review from within the virtual machine. I did make an attempt to build the modified ghc for myself, but decided to focus on the VM instead.
+I did most of my review from within the virtual machine. I did make an
+attempt to build the modified ghc for myself, but decided to focus on
+the VM instead.
 
-I ran the script to generate data.pdf. Mine had a lot fewer lines on it than the one in the paper. It looks like FAST mode was enabled in the Makefile by default. I had a spike in ghc's memory usage on the line near 600M. How deterministic are these results supposed to be? It was still under the black limit, so maybe Haskell's garbage collector did something different this time.
+I ran the script to generate data.pdf. Mine had a lot fewer lines on it
+than the one in the paper. It looks like FAST mode was enabled in the
+Makefile by default. I had a spike in ghc's memory usage on the line
+near 600M. How deterministic are these results supposed to be? It was
+still under the black limit, so maybe Haskell's garbage collector did
+something different this time.
 
-The Prisoners program ran without any trouble, but I was not able to build PrisonersRaw. The error was:
+The Prisoners program ran without any trouble, but I was not able to
+build PrisonersRaw. The error was:
 
 
 PrisonersRaw.hs:74:18:
@@ -284,15 +311,25 @@ make: *** [PrisonersRaw] Error 1
 
 
 
-I wasn't sure exactly how to interpret the results from Prisoners, but I'm guessing Figure 8 was extracted from the +RTS -S output?
+I wasn't sure exactly how to interpret the results from Prisoners, but
+I'm guessing Figure 8 was extracted from the +RTS -S output?
 
-Next, I built and ran each of the tutorial programs. When running 4.hs, I had a couple of MVar-related errors, but otherwise everything else worked well.
+Next, I built and ran each of the tutorial programs. When running 4.hs,
+I had a couple of MVar-related errors, but otherwise everything else
+worked well.
 
 
-To me, one strength of this artifact is that the code was provided through Github (though I had to hunt a little to find the ghc changes). This greatly reduces barriers to building on this work in future research.
+To me, one strength of this artifact is that the code was provided
+through Github (though I had to hunt a little to find the ghc changes).
+This greatly reduces barriers to building on this work in future
+research.
 
 ----------- COMMENTS FOR IMPROVING THE ARTIFACT -----------
-The obvious one is to make sure all the examples provided build and run (though perhaps the errors were my fault).
+The obvious one is to make sure all the examples provided build and run
+(though perhaps the errors were my fault).
 
-I didn't see a link to the modified ghc repo in the pldi14-rlimits-aec repo. I was able to find it based on version in the VM, but it would have been nice to have a link to this and a mention of what branch to find the changes in.
+I didn't see a link to the modified ghc repo in the pldi14-rlimits-aec
+repo. I was able to find it based on version in the VM, but it would
+have been nice to have a link to this and a mention of what branch to
+find the changes in.
 
