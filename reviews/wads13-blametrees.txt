@@ -1,0 +1,124 @@
+We are pleased to inform you that your paper "Blame Trees" has been
+accepted for presentation at WADS 2013 (www.wads.org).
+
+This year, WADS received 139 submissions, out of which the Program
+Committee selected 44 papers for presentation at WADS (31% acceptance
+rate). We look forward to a strong scientific program.
+
+Attached are the reviews of your paper. Please study them carefully and
+revise your paper accordingly. The final version of your paper for the
+Springer LNCS proceedings are due on May 6.  Information on how to
+upload your final paper will be sent to you by separate email.
+
+Congratulations on your paper. We look forward to seeing you at WADS.
+
+Best Regards,
+
+Frank, Joerg, and Roberto
+(WADS PC Co-Chairs)
+
+
+----------------------- REVIEW 1 ---------------------
+PAPER: 107
+TITLE: Blame Trees
+AUTHORS: Erik Demaine, Pavel Panchekha, David Wilson and Edward Yang
+
+OVERALL EVALUATION: 2 (accept)
+
+----------- REVIEW -----------
+The paper looks at a highly revelant problem for anyone working with
+computers, that of merging text documents in a document versioning
+system. The focus is on detecting conflicting regions in documents to be
+merged, and the apporach is based on a tree representation for documents
+("blame trees") and its efficient implementation. The authors model text
+documents as conuently persistent sorted associative dictionaries, which
+can not only store old versions of a document in the presence of
+modifications, but also supports a merge operation. The implementation
+of merge demonstrated exhibits a logirithmic running time, which is a
+considerable improvement over previous linear-time algorithms.
+
+The paper is very well-written, and the authors appear to be very
+familiar with related or prior work in their field. Most importantly,
+they consider a practical problem and show how better solutions than
+those previously published can be obtained by looking at a reasonable
+abstraction and formal treatment. The presentation of algorithmic
+components uses a compact functional style, which makes the core steps
+underable with reasonable effort.
+
+
+----------------------- REVIEW 2 ---------------------
+PAPER: 107
+TITLE: Blame Trees
+AUTHORS: Erik Demaine, Pavel Panchekha, David Wilson and Edward Yang
+
+OVERALL EVALUATION: 1 (weak accept)
+
+----------- REVIEW -----------
+The paper considers a problem of constructing a confluently persistent
+dictionary, i.e., desiging a data structure for a mapping from keys to values,
+where it is possible to update and query not only the newest version, but also
+the historical ones. Confluence means that it is possible to merge two versions
+of the dictionary creating a new one. The problem is motivated by a real-life
+application: storing a single text file in a version control system (such as
+svn, cvs, git, etc.) requires such operations in some form. (Dictionary is just
+a way of viewing a single text file with some granularity, such as lines of the
+text file indexed by their line number.)
+
+The paper focuses on designing an efficient merging algorithm and improves over
+trivial (and commonly used) merging routine that works in time linear in the
+size of text file.  It gives an algorithm that works in time O(N + sum_{s \in S}
+log |s|), where N is the time needed to merge non-shared entries and S
+denotes the set of shared areas of the file.
+
+Pros:
+* Practical relevance of the problem: this result might actually be implemented
+in some real-life revision control systems.
+* Paper is very well-written, reads with pleasure. I believe it would be a good
+explanatory paper if somebody would like to implement this approach.
+
+Cons:
+* The approach is quite straightforward (storing the dictionary in a balanced
+binary tree augmented with some additional information), and the proofs are
+quite simple as well.
+* The sizes of single text files seen in practice are rather small, so I'm not
+sure whether the improvement over naive implementation would be noticeable.
+
+
+----------------------- REVIEW 3 ---------------------
+PAPER: 107
+TITLE: Blame Trees
+AUTHORS: Erik Demaine, Pavel Panchekha, David Wilson and Edward Yang
+
+OVERALL EVALUATION: 1 (weak accept)
+
+----------- REVIEW -----------
+The paper considers the problem of identifying
+the shared and unshared portions of two
+versions of a  document each represented by a tree
+and creating a merged document, assuming that the 
+conflict resolution is handled somehow.
+
+It would be cleaner to state the merging problem without
+reference to the conflict resolution.
+For example, produce a new document containing 
+one copy of the shared regions, plus one annotated copy
+of the unshared regions, sorted by key.
+Then the conflict resolution could be performed afterwards, as a separate phase.
+
+On page 4, paragraph 3, N should be in script font.
+
+The pseudocode in Figures 4 & 5 should be explained.
+It is unclear to me what the return values are,
+ where they are created, what yield does,
+and what k(TRUE) and  k(FALSE) are. It is also unclear
+how the coroutines work.
+
+On page 8, line 2, add "the root node of" before "its respective tree".
+
+On page 8, line 7, change "d+1" to "d-1".
+
+The brief discussion about expanding red nodes into two black nodes was unclear.
+
+It would be helpful to have a running example to show
+how the shared subtrees are found (Lemmas 1 and 2)
+and how they are merged (Theorem 2).

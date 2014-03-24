@@ -1,0 +1,298 @@
+We are pleased to inform you that your artifact met or exceeded the
+expectations of your paper.  You can include a badge in your final
+paper; you can find the badge here:
+
+http://pldi14-aec.cs.brown.edu/aec-badge-pldi.pdf
+
+In addition, you may use an extra page in the final version of your
+PLDI paper, at no cost to you.  This gives you space to include the
+badge in your paper, as well as a description of your artifact.
+
+There will also be an AEC session/event at the PLDI conference, in
+which we hope you will participate.  We will provide more details to
+you about this event in the future.
+
+In case you are curious, out of roughly 50 accepted papers, 20
+submitted artifacts.  Of these, 12 were found to meet or exceed
+expectations.  The artifacts were reviewed by an outstanding team ---
+
+http://pldi14-aec.cs.brown.edu/committee/index.html
+
+--- who poured hours of effort into each review, and then into
+discussions, which often resulted in revisiting the artifact and
+further discussions.  Their work demonstrated a deep interest in doing
+the process well.
+
+The reviews of your artifact are attached below.  You may, if you
+wish, include portions of the reviews in your paper as you see fit.
+
+We sincerely hope you will use the reviewers' comments to revise the
+artifacts and, more importantly, to make the artifacts PUBLIC.  For
+instance, we recommend uploading your revised artifact to the ACM DL's
+paper supplement section, or putting it in some other permanent
+location and referring to it in the final version of your paper.
+
+We thank you for submitting your artifact, and we very much hope that
+you will continue to submit your artifacts in the future.
+
+Sincerely yours ---
+
+Eric Eide
+Shriram Krishnamurthi
+Jan Vitek
+on behalf of the rest of the AEC
+
+
+----------------------- REVIEW 1 ---------------------
+PAPER: 3
+TITLE: Resource Limits for Haskell
+AUTHORS: Edward Yang and David Mazieres
+
+OVERALL SCORE: 2 (greatly exceeded expectations)
+
+----------- BRIEF PAPER SUMMARY AND CONTRIBUTIONS -----------
+A mechanism is proposed for dynamically monitoring and restricting the
+  memory footprint of sub-computations, called *resource containers*. Threads
+  are tainted by the containers for objects to which they retain references.
+  Threads are destroyed when any of their associated containers in exceeded.
+  Containers can avoid excessive taint by copying objects instead of referring
+  to them.
+
+----------- ARTIFACT SUMMARY -----------
+The resource container system is implemented as an extension to GHC
+  providing a minimal low-level API together with a monad as a higher-level
+  interface to the system. There are a few example programs using both
+  interfaces and an evaluation of the tool's accuracy.
+
+----------- ARTIFACT PACKAGING AND REPRODUCIBILITY -----------
+The artifact was provided pre-built in a VM image, which was extremely
+  pleasant. The directions made it easy to build and run examples. Running the
+  full accuracy evaluation was also turnkey. Just great!
+
+----------- ARTIFACT IMPLEMENTATION AND USABILITY -----------
+The higher-level API to the RC system is very straightforward and makes it
+  easy to handle exceptional cases. Implementation based on GHC's
+  block-structured heap is elegant and effective.
+
+----------- DETAILED EVALUATION AND SCORE JUSTIFICATION -----------
+I read the provided examples to get a more detailed idea of how the APIs
+  worked and how they're used in semi-realistic programs. I also read over the
+  more real-world case study (an open-source HTTP server) and found that the
+  simplicity of the bug-fix lived up to the claims in the paper.
+  
+  I compiled and ran the examples (including Happstack) to verify that they
+  did what was claimed.
+  
+  I also attempted to run the "fast" version of the accuracy data collection,
+  but I (ironically) ran into a Haskell OOM error. Perhaps this was a
+  peculiarity of my VirtualBox setup or some missing flags to the RTS.
+
+  The APIs seem to match exactly what was described in the paper and work
+  without much hassle -- adding containers to existing Haskell code seems to
+  be straightforward and accurate.
+
+----------- COMMENTS FOR IMPROVING THE ARTIFACT -----------
+I ended up slightly confused about the necessity of the 'rcKill' calls in
+  some of the examples. Is this just necessary for benchmarking purposes or is
+  there some more practical need for explicit kills? I didn't see this
+  explained in the paper.
+
+  This is probably a different paper, but it would be useful to see how more
+  introspective information could be generated for debugging purposes when
+  containers are exceeded. Who should be blamed for allocated too much memory?
+  Always attributing to the creator of thunks is a good first cut, but might
+  violate intuition in some cases, suggesting that debugging tools built on
+  this system could be fruitful.
+
+
+----------------------- REVIEW 2 ---------------------
+PAPER: 3
+TITLE: Resource Limits for Haskell
+AUTHORS: Edward Yang and David Mazieres
+
+OVERALL SCORE: 1 (exceeded expectations)
+
+----------- BRIEF PAPER SUMMARY AND CONTRIBUTIONS -----------
+This paper presents a resource limits system for Haskell based on
+resource containers, which allows programs to enforce local restrictions
+on space usage for differents portions of a program. To manage the
+interaction of resource containers with lazy evaluation, the authors
+reuse the existing cost semantics used by the Haskell profiler. Unlike
+previous resource limits systems, this system supports both revocable
+references (as a special datatype) and killing threads as reclamations
+strategies.
+
+The paper first provides a high-level overview of the systems's design
+and explains some of the design decisions made by the authors. Then, it
+presents two formal semantics: a big-step semantics describing the
+interaction between resource containers and core features of Haskell,
+and a small-step semantics describing the interactions between resource
+containers and exceptions. The paper then describes the implementation
+of resource limits in GHC and provides an empirical evaluation showing
+that: 1- resource limits correctly limit memory usage and 2- time
+overhead of resource limits is low, but not low enough to enable then by
+default.
+
+----------- ARTIFACT SUMMARY -----------
+The artifact is a virtual machine image that contains a version of GHC
+that supports resource limits, the user-level resource limits library,
+benchmarks and scripts to run the "accuracy" experiments, a version of
+Happstack that exhibits the bug discussed in section 5.2 (as well as a
+fix for that bug) and the code for the prisoners dilemma example from
+section 5.2.
+
+----------- ARTIFACT PACKAGING AND REPRODUCIBILITY -----------
+The artifact was well packaged. Unfortunately, the scripts to run some
+of the experiments (some of the prisoners dilemma, nofib benchmarks)
+were missing, which made it harder/impossible to reproduce these
+experiments.
+
+----------- ARTIFACT IMPLEMENTATION AND USABILITY -----------
+The instructions and tutorial were detailed and helpful. The resource
+limits API is slightly different from the description in the paper, but
+the differences are well-documented and none of them are significant.
+
+----------- DETAILED EVALUATION AND SCORE JUSTIFICATION -----------
+To evaluate this artifact, I did the following:
+ - I ran the examples from the tutorial and some small examples of my own.
+ - I reproduced the "accuracy" experiment
+ - I reproduced the happstack infinite header bug
+ - I reproduced the prisoners dilemma experiment
+ 
+The examples from the tutorial all ran as expected. These examples
+showcased enough of the API that I was able to write my own examples
+without problems. Documentation would have been a nice addition, but
+examples were enough.
+
+I had a few surprises when trying out additional examples. First, I
+tried the variant of 2.hs for which the README says it will not
+attribute costs properly. Unless I misunderstood something, that example
+did seem to attribute costs to the right resource container (as
+confirmed by a resource container listener). I tried another similar
+example, more closely based on section 4.6, and it also seemed to
+attribute costs properly. Maybe I was not using the right optimization
+level to trigger the bug. Of course, if that cost attribution limitation
+does not actually show up, this is not a bad thing!
+
+In a few of my examples, listeners sometimes behaved unpredictably. For
+example, a listener for 150 in an RC of size 200 would never run, but
+listeners for smaller values would. To reproduce, edit 3.hs (provided in
+the artifact) to produce a message at 150 instead of 100. 100 and 120
+(or anything lower) results in a message, but 150 does not.
+
+I've also observed listeners firing before any computation should have
+occurred within an RC (the computation was blocking on input, so I don't
+think it was lazy evaluation shuffling the evaluation order). I included
+a program exhibiting that behavior, in the "additional comments" field.
+
+
+I reproduced the "accuracy" experiment. Apart from "suml" using a lot
+less memory than the paper reports (it barely uses more than 1x the
+limit) and GHC getting close to 2x the limit at the 600M end of the
+plot, the results are very close to those in the paper. Memory usage
+never grows beyond twice the limit.
+
+
+I reproduced the happstack infinite header bug. I was impressed by how
+simple (and non-intrusive) resource limits made the fix. As predicted,
+without resource limits, I was able to get happstack to consume all of
+memory. With resource limits, the server stopped almost immediately.
+
+I also ran the happstack benchmark. The numbers of connections per
+second I observed were much lower than in the paper (the maximum I
+observed was about 10), which is probably due to the virtual
+machine. The overhead of enabling RC was comparable (a bit lower,
+actually) than reported in the paper.
+
+
+I ran the prisoners dilemma experiment. Since the scripts to generate
+the plot from figure 8 were missing, so I had to rely on the logs
+produced by the program. The "RCMVar no longer available" events in the
+log seem to match up with the peaks in figure 8, so the results look
+plausible. I found the implementation of the prisoners dilemma program
+to be very clear, and a nice showcase of resource limits.
+
+
+I was not able to reproduce the "nofib" experiment from the paper, as
+the benchmarks were not included in the artifact.
+
+----------- COMMENTS FOR IMPROVING THE ARTIFACT -----------
+The "accuracy" experiments produces results in a pdf file, but the
+artifact does not include a pdf reader, or an ssh client or server to
+copy the files to a different machine. I ended up installing the latter
+(thanks for providing the root password!), but providing it as part of
+the artifact would have been nice.
+
+----------- ADDITIONAL COMMENTS TO THE AUTHORS -----------
+import Control.RLimits
+
+rint :: String -> Int
+rint = read
+
+main = do
+   cur <- getCurrentRC
+   rc <- newRC 400 cur
+   -- this gets printed before the input is even read
+   listenRC rc 50 (putStrLn "50 left")
+   x <- getLine
+   withRC1 rc x $ \x' -> do
+      print (foldr (+) (rint x') [1.. (rint x')])
+
+
+----------------------- REVIEW 3 ---------------------
+PAPER: 3
+TITLE: Resource Limits for Haskell
+AUTHORS: Edward Yang and David Mazieres
+
+OVERALL SCORE: 0 (met expectations)
+
+----------- BRIEF PAPER SUMMARY AND CONTRIBUTIONS -----------
+This paper describes how to add fine-grained resource limits to Haskell. In this case, the authors considered memory usage. Current approaches for establishing resource limits are fairly course grained, either at the OS level or through Haskell APIs. One problem with this approach is that limits can only be applied at a course grain, such as at the level of processes.
+
+The authors present a modification to the Haskell runtime, as well as a new resource container API that allows programmers to set memory limits on particular sections of code. The paper includes a semantics for the STG language with these new resource limits and an evaluation of how well their system enforces the desired limits.
+
+----------- ARTIFACT SUMMARY -----------
+The artifact consists of a Github repo containing source code for several examples that were used in the paper. The README includes links to the paper, a virtual hard disk image and the Github repo for the rlimits support library.
+
+The hard disk contains their modified Haskell pre-installed, the rlimits library, several rlimits examples, and the source code from the artifact's repository.
+
+----------- ARTIFACT PACKAGING AND REPRODUCIBILITY -----------
+I was able to get the virtual machine running and building the provided software. For the most part, everything ran as expected.
+
+----------- ARTIFACT IMPLEMENTATION AND USABILITY -----------
+I appreciate that the VM image includes the modifications to ghc already installed. The script to generate Figure 6 from the paper was a nice touch as well. Distributing the artifact via Github provides an easy way for me to quickly browse the files and see, for example, what changes were needed in ghc.
+
+----------- DETAILED EVALUATION AND SCORE JUSTIFICATION -----------
+I did most of my review from within the virtual machine. I did make an attempt to build the modified ghc for myself, but decided to focus on the VM instead.
+
+I ran the script to generate data.pdf. Mine had a lot fewer lines on it than the one in the paper. It looks like FAST mode was enabled in the Makefile by default. I had a spike in ghc's memory usage on the line near 600M. How deterministic are these results supposed to be? It was still under the black limit, so maybe Haskell's garbage collector did something different this time.
+
+The Prisoners program ran without any trouble, but I was not able to build PrisonersRaw. The error was:
+
+
+PrisonersRaw.hs:74:18:
+    Couldn't match expected type `() -> IO RC' with actual type `IO RC'
+    The function `getCurrentRC' is applied to one argument,
+    but its type `IO RC' has none
+    In a stmt of a 'do' block: parent_rc <- getCurrentRC ()
+    In the expression:
+      do { let players = ...;
+           scores <- mapM (const (newIORef 0)) players;
+           parent_rc <- getCurrentRC ();
+           forM_ (zip3 [1 .. ] players scores) $ \ (i, p, s) -> do { ... } }
+make: *** [PrisonersRaw] Error 1
+
+
+
+I wasn't sure exactly how to interpret the results from Prisoners, but I'm guessing Figure 8 was extracted from the +RTS -S output?
+
+Next, I built and ran each of the tutorial programs. When running 4.hs, I had a couple of MVar-related errors, but otherwise everything else worked well.
+
+
+To me, one strength of this artifact is that the code was provided through Github (though I had to hunt a little to find the ghc changes). This greatly reduces barriers to building on this work in future research.
+
+----------- COMMENTS FOR IMPROVING THE ARTIFACT -----------
+The obvious one is to make sure all the examples provided build and run (though perhaps the errors were my fault).
+
+I didn't see a link to the modified ghc repo in the pldi14-rlimits-aec repo. I was able to find it based on version in the VM, but it would have been nice to have a link to this and a mention of what branch to find the changes in.
+

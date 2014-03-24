@@ -1,0 +1,275 @@
+The IEEE Symposium on Security and Privacy (Oakland 2013) program committee
+regret to inform you that your paper #180 was not accepted, and will not
+appear in the conference.
+
+       Title: Eliminating Cache-Based Timing Attacks with Instruction-Based
+              Scheduling
+     Authors: Pablo Buiras (Chalmers University)
+              Amit Levy (Stanford University)
+              Alejandro Russo (Chalmers University)
+              David Mazieres (Stanford University)
+              Deian Stefan (Stanford University)
+              David Terei (Stanford University)
+              Edward Z. Yang (Stanford University)
+  Paper site: https://oakland.gtisc.gatech.edu/paper.php/180?cap=0180anCzzMZMm-qo
+
+38 papers were accepted out of 315 submissions.
+
+Reviews and comments on your paper are appended to this email.  We hope you
+will find the comments helpful to your work, and we hope to see you at
+Oakland 2013.
+
+- Oakland 2013 Submissions
+
+===========================================================================
+                         Oakland 2013 Review #180A
+                Updated Wednesday 19 Dec 2012 8:58:48am UTC
+---------------------------------------------------------------------------
+  Paper #180: Eliminating Cache-Based Timing Attacks with Instruction-Based
+              Scheduling
+---------------------------------------------------------------------------
+
+                      Overall merit: 4. Weak accept
+          Confidence in your review: 4. High
+                            Novelty: 4. New contribution
+                    Technical merit: 4. No obvious problems
+               Presentation quality: 4. Good
+
+                         ===== Paper summary =====
+
+The paper demonstrated a cache-based internal timing channel attack targeting the concurrent information flow control (IFC) system. The authors then proposed a countermeasure to eliminate the internal timing channel by replacing the conventional time-based scheduler with instruction-based scheduler. The authors implemented the new scheduler using the retired-instruction counter and performance evaluation shows no significant degradation. The paper also gives a formal prove of the capability of the new scheduler in defending against internal timing channel attacks.
+
+                        ===== Paper strengths =====
+
+1. The attack proposed by the authors is easy to launch;
+2. The idea of instruction-based scheduler is simple yet effective, without significant performance degradation;
+3. The presentation of the paper is thorough and clear. The authors evaluated the performance using standard benchmarks and also formally prove the capability of the scheduler to eliminate the internal timing channel.
+
+                       ===== Paper weaknesses =====
+
+The weakness of this paper is that it did not mention what the root cause of the internal timing channel is. Is the time-based scheduler the root cause? Otherwise, the countermeasure is only specific to the proposed attacks, but not all the internal timing channels.
+There are three assumptions for a successful internal timing channel:
+1. The timing behavior of a thread depends on a secret data;
+2. Instead of directly measuring the time as in the external timing channel, the timing behavior has to be converted to the time to produce an observable public event;
+3. The race between two threads to acquire a public resource can be used as a public event in assumption 2. 
+Only assumption 3 depends on the scheduler. But it is not clear that the race between two threads to acquire public resource is the only way to realize assumption 2. If there is other way to convert the timing behavior of a thread to some observable event without using race between two threads, then the instruction-based scheduler may not defeat this internal timing channel. 
+
+Another weakness of the paper is that there is no experiment of the proposed attack with both time-based scheduler and instruction-based scheduler. 
+
+A minor point is that there is no label for the x-axis in Figure 4.
+
+              ===== Justification of the overall merit =====
+
+Although there are weaknesses mentioned above, overall the paper makes a new contribution. The cache-based internal timing channel reintroduced the internal timing channel to the IFC system, which was previously claimed to be eliminated. Therefore, the overall quality of the paper is good.
+
+===========================================================================
+                         Oakland 2013 Review #180B
+                Updated Thursday 20 Dec 2012 6:15:32am UTC
+---------------------------------------------------------------------------
+  Paper #180: Eliminating Cache-Based Timing Attacks with Instruction-Based
+              Scheduling
+---------------------------------------------------------------------------
+
+                      Overall merit: 4. Weak accept
+          Confidence in your review: 4. High
+                            Novelty: 4. New contribution
+                    Technical merit: 3. Only minor technical problems
+               Presentation quality: 4. Good
+
+                         ===== Paper summary =====
+
+In this paper, the authors first show that concurrent deterministic IFC systems that use time-based scheduling are vulnerable to a cache-based internal timing channel. An experimental evaluation demonstrates such an attack against Hails. To eliminate this internal timing channel, the authors introduce instruction-based scheduling, a new kind of scheduler that is indifferent to timing perturbations from underlying hardware components (e.g., cache, TLB, and CPU buses). The authors provide an initial implementation of the idea and demonstrate that this scheduling is feasible in practice.
+
+                        ===== Paper strengths =====
+
+In a first step, the authors present an attack against the IFC framework Hails. The general idea is that side-channel are not mitigated and thus they can be exploited by an attacker.
+
+To solve this problem, the authors introduce a concept called instruction-based scheduling, which is basically a fixed scheduling that treats all threads equal. This approach thwarts the presented attack. The concept is more general and can likely also be applied in other areas. 
+
+The paper is well written and easy to read.
+
+                       ===== Paper weaknesses =====
+
+The actual implementation relies on CPU retired-instruction counters. The authors need to introduce this concept in more detail and explain the limitations/drawbacks more clearly. For example, retired-instruction counters are MSRs and requires special privileges. Furthermore, the signal is IMHO delivered in an asynchronous way - might this influence the precision? Why is no single-stepping of the program used (I guess mainly performance concerns)? 
+
+The performance evaluation should be extended, programs with a longer runtime should be tested to observe the effect in practice. Furthermore, micro-benchmarks could be interesting - what impact do the retired-instruction counters have?
+
+Related work that uses hardware counters for security (e.g., "Using Hardware Performance Events for Instruction-Level Monitoring on the x86 Architecture" by Vogl and Eckert, EuroSec'12) should be included in the discussion of related work. The paper by Vogl and Eckert also uses counters to execute only a limited number of instructions (same basic idea), but they report high performance impact. Why is your implementation orders of magnitude faster?
+
+              ===== Justification of the overall merit =====
+
+In summary, I recommend a weak accept. The paper introduces both an attack against an IFC system and also a mitigation. The authors have implemented/tested both aspects and the paper is well written.
+
+===========================================================================
+                         Oakland 2013 Review #180C
+                 Updated Friday 11 Jan 2013 3:52:19am UTC
+---------------------------------------------------------------------------
+  Paper #180: Eliminating Cache-Based Timing Attacks with Instruction-Based
+              Scheduling
+---------------------------------------------------------------------------
+
+                      Overall merit: 2. Weak reject
+          Confidence in your review: 4. High
+                            Novelty: 3. Incremental improvement
+                    Technical merit: 3. Only minor technical problems
+               Presentation quality: 3. Average
+
+                         ===== Paper summary =====
+
+This paper presents an a timing attack that allows the low-privilege
+attacker to deduce the values of high-privilege variables. The attack
+targets the Labeled IO (LIO) library, an Information Flow Control
+(IFC) library for Haskell programs; specifically it targets the
+cache. The authors of this paper claim that the LIO authors present
+LIO as free of internal timing covert channels. The attack presented
+in the paper, therefore, refutes the claim by exhibiting a timing
+attack.
+
+The paper proposes a mitigation -- instruction-based thread
+scheduling. Threads are context-switched after executing N
+instructions. The authors implemented a new instruction-based
+scheduler for Glasgow Haskell Compilation (GHC); they give details
+about the impact on runtime of a benchmark suite.
+
+The authors extend the LIO formalization (given in a citation) to
+express the instruction-based scheduling. They then discuss the
+limitations of the approach.
+
+                        ===== Paper strengths =====
+
+1. In addition to the formalization, the authors demonstrate the
+feasibility of the instruction-based scheduler with real
+implementation and measure its performance using standard benchmarking
+suite.
+
+2. The proposed instruction-based scheduler is an interesting solution
+to eliminate timing channels. Though it is only implemented on one
+particular platform, this reviewer is convinced of its generality.
+
+3. The limitation of the work is acknowledged and throughly discussed.
+
+                       ===== Paper weaknesses =====
+
+1. To demonstrate the timing channel attack, the authors only show an
+example of code in Haskell with with key-parameters missing. They
+claim that the parameters can be determined experimentally, but do not
+specify any details about how practical the experiments are in real
+world programs.  In addition, the authors also claim that the timing
+channel they introduce to have high bandwidth, but fail to quantify
+the actual bandwidth (bounds).
+
+2. As acknowledged by the authors, the proposed systems suffer from
+two key limitations. One is the need to re-derive maximum number of
+instructions for a thread to execute before context-switch across
+different machines. And the other is the lack of thread-level
+parallelism support.
+
+3. The evaluation of the new scheduler could have been expanded in at
+least two ways. First of all, the authors only measurement its
+performance using standard Haskell benchmarking suite, but not real
+Hail applications, which is the focus of the paper. In addition, since
+the thread model of this paper states that the application running on
+top of the web framework is not trusted, it would be much better if
+the authors evaluate or discuss the fairness of the new scheduler in
+the presence of malicious code that aims to abuse the new scheduler.
+
+4. As a minor issue, the authors seem to confuse side channels with
+covert channels.
+
+              ===== Justification of the overall merit =====
+
+This paper has an interesting solution to a poorly motivated problem.
+
+===========================================================================
+                         Oakland 2013 Review #180D
+                 Updated Friday 11 Jan 2013 5:24:23pm UTC
+---------------------------------------------------------------------------
+  Paper #180: Eliminating Cache-Based Timing Attacks with Instruction-Based
+              Scheduling
+---------------------------------------------------------------------------
+
+                      Overall merit: 1. Reject
+          Confidence in your review: 4. High
+                            Novelty: 2. Done before (not necessarily
+                                        published)
+                    Technical merit: 1. Flawed, probably not or definitely
+                                        not fixable
+               Presentation quality: 4. Good
+
+                         ===== Paper summary =====
+
+This paper proposes a scheduler that uses number of committed instructions as the quanta instead of time. The goal is to mitigate data dependent cache based covert channels.
+
+                        ===== Paper strengths =====
+
+The paper is on a interesting topic.
+
+                       ===== Paper weaknesses =====
+
+The proposed solution will have covert timing channels.
+
+Consider the following program:
+
+thread 1:
+
+if secret 
+   then 
+     for i in [1 .. 1000]
+        increment memory location x;
+   else
+     for i in [1 .. 1000]
+         increment memory location y;
+   
+thread 2:
+
+for i in [1 .. 1000] 
+   increment memory location x;
+output(0)
+
+thread 3:
+
+for i in [1 .. 1000]
+    increment memory location y;
+output(1)
+
+Thread 2 and 3 execute the same number of instructions but depending on the secret value one of the two threads is going to finish first because they there will be coherence traffic between the first thread and either thread 2 or 3.
+
+              ===== Justification of the overall merit =====
+
+See counterexample above.
+
+===========================================================================
+                         Oakland 2013 Review #180E
+                 Updated Friday 25 Jan 2013 5:45:12am UTC
+---------------------------------------------------------------------------
+  Paper #180: Eliminating Cache-Based Timing Attacks with Instruction-Based
+              Scheduling
+---------------------------------------------------------------------------
+
+                      Overall merit: 2. Weak reject
+          Confidence in your review: 3. Average
+                            Novelty: 3. Incremental improvement
+                    Technical merit: 2. Flawed but probably fixable in the
+                                        final version
+               Presentation quality: 3. Average
+
+                         ===== Paper summary =====
+
+The work is primarily motivated by a line of previous research on preventing covert channels. The existing system is call Hails, which is designed to allow secure execution of untrusted code in web applications. The authors of the previous work claimed that their technique is able to eliminate “internal timing” covert channel, while this submission argues that the claim is invalid because cache can be utilized as a timing covert channel (Note: There are a bunch of papers about the existing work. The main paper about Hails is [4]. If I understand correctly, [4] is not particularly about covert channel prevention. This submission raises the concern mainly against [29].)    
+
+The authors propose Instruction-Based Scheduling to thwart the cache-based timing attack.  The paper also defines the cache-aware semantics. Based on the semantics, a theorem about non-interference is provided. The authors claim that a proof is available in the full version of this paper.
+
+                        ===== Paper strengths =====
+
+It is valuable to point out a specific covert channel which authors of the previous work might not consider.
+
+                       ===== Paper weaknesses =====
+
+I don't think this paper is technically substantial. The first part of the paper is basically about the small example in Figure 1. The second part is about proposing the instruction-based scheduling to replace the timer-based scheduling. The idea is straightforward. The formalization and the theorem are also described very briefly. 
+
+The authors should do a much better job in explaining the significance of their finding in a real environment. The papers that this submission compares to are about actual system and language designs, which are used for building real web apps. It is not very impressive to describe an attack against these real systems without presenting a concrete practical context. Is there any practical situation in which an attack similar to the one hypothetically shown in figure 1 is a serious threat? If yes, you should present the attack in this realistic context. If no, it is a red flag about the practical relevance of the finding. 
+
+Without the concrete system context, I feel that the discussion is more or less a matter of terminology. This is how [29] described the “internal timing” covert channel and the main idea of [29]: “an internal timing attack can be carried out whenever a race to acquire a shared public resource may be affected by secrets. We close this covert channel by decoupling the execution of computations that produce public events from computations that manipulate secret data.” In my opinion, cache is a sort of “shared public resource”, so the idea of “decoupling …” is valid, if it is implemented effectively. Are you criticizing the main idea of [29] or just the fact that their implementation does not include cache as a shared public resource?
+
+
+

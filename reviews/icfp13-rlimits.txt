@@ -1,0 +1,469 @@
+I regret to inform you that your submission 
+
+108: Resource Limits for Haskell
+
+was not selected for inclusion in the programme of this year's 
+ICFP.
+
+We received 133 submissions, which made the competition very 
+tough this year. Selection of the best papers was difficult.
+Many papers with high marks were discussed extensively,
+but had to be rejected eventually.
+
+We hope that you will find the reviewers' remarks useful and 
+can benefit from them to produce a better paper.
+
+We also hope to see you in Boston at ICFP 2013 and perhaps 
+you can contribute to a workshop of the conference.
+
+Kind regards,
+
+Tarmo Uustalu
+ICFP 2013 PC chairman
+
+
+----------------------- REVIEW 1 ---------------------
+PAPER: 108
+TITLE: Resource Limits for Haskell
+AUTHORS: Edward Yang and David Mazieres
+
+OVERALL EVALUATION: 0 (borderline paper)
+REVIEWER'S CONFIDENCE: 3 (medium)
+
+----------- REVIEW -----------
+Technical Summary
+~~~~~~~~~~~~~~~~~
+
+The paper presents a way to extend the cost center mechanism of GHC,
+used for profiling, with dynamic cost centers that the user
+gives. Cost centers can then be used in a "profiled" run to establish
+resource limits for pure and impure computations. A challenging
+problem that this work addresses is how to make sure that all memory
+that has been allocated by a (pure or impure) computation can indeed
+be freed after e.g. the resource consumption for this computation
+tracked in a relevant cost center has exceeded some bounds. To this
+end the authors propose a sandboxing approach based on copying and
+truncating for pure computations and an information-flow approach for
+impure computations that tracks cost centers that flow to references
+(and threads with cost centers they intend to access, as in LIO). To
+track memory consumption the authors have implemented incremental heap
+census which allows them to get accurate resident memory information
+without traversing the whole heap. The paper presents experimental
+evidence that shows resource limits working, but the incremental
+census required for memory tracking does not appear to make things
+much worse than the profiled version of the program.
+
+
+Opinion:
+~~~~~~~~
+
+This is an extremely interesting topic, very relevant for high
+assurance software.  The main ideas and primitives look reasonable,
+although some people might complain that they are more of design
+guidelines and do not really enforce safety (though most real-world
+software is like this, so I do accept the pragmatic
+considerations). On the negative side the paper presentation is dense
+and very GHC specific. I am not sure that a person not familiar with
+cost centers would be able to fully follow. Moreover there are very
+few examples (none I believe, actually!) of using the design
+primitives to implement or demonstrate the usage -- especially for the
+impure computations. Finally I know and understand that a
+formalization of how exactly the incremental census works or how
+exactly labels are tracked in the modified LIO interface is probably a
+heavy task but I would appreciate a more precise description of what
+is going on. This basically feels like half paper to this reviewer
+(actually like 2 half papers, one about the library and the modified
+LIO, and the other about the census algorithm), so I would go with 
+borderline.
+
+
+Comments:
+~~~~~~~~
+
++ Abstract: "forcible resource reclamation". Terminology vague at this point
+
++ Intro, pg1, col2, para2: "are your cost semantics" <- is your cost
+  semantics
+
++ Intro, contribution list: maybe the bullet order should be reversed
+  to follow the exposition in the paper?
+
++ In general the bullet points in the intro assume already famliarity
+  with GHCs cost centers, so I am wondering if the first paragraph in
+  2.1 could be moved to the introduction, to give the readers a little
+  bit of context.
+
++ Moreover, the scc discussion and dynamic scoping / static scoping in
+  2.1 -- is it really relevant? Why don't you cut to the chase and
+  say: "Here is what static cost centers are, here is why they are not
+  good for our purposes (with an example please! there is no example
+  currently), and here is our proposal"). The motivation for dynamic
+  cost centers comes a bit too late (3.1) in a parenthesis ("in the
+  case of loading an untrusted module") and no example!  Also at that
+  point I believe that you should go in quite a bit of depth to
+  explain cost centers and their semantics in detail (it is ok if it
+  is previous work, no problem!), and not defer to the Appendix. There
+  is plenty of space in the paper and there are many subsequent points
+  where the user is somewhat lost without referring to the semantics.
+
++ The Goal 2.3 is a bit dense too. Also, at some point in the paper
+  you should go back to the Goal and say: And now we achieve this. And
+  explain how.
+
++ End of 3.1: "A keen reader ... symmetric with ...". The word
+  "symmetric" is funny. In fact I do not understand this sentence.
+
++ Section 3.3:
+  I am a bit puzzled about the use of "evaluate" in
+  sandboxThunk. Evaluate evaluates to WHNF or deeply? If it evaluates
+  to WHNF then aren't we going to be left with something like a
+  constructor
+  
+        K (copy (k ..))
+  
+  at the top-level? And then we will still have pointers leaking to
+  things that should be deallocatable?
+  
+  Can you please give an example of copy? It might also be helpful to
+  elaborate a bit on why and how exactly copying "moves" data from one
+  cost center to another.
+
+  Can you please give an example of truncation? Is the programmer
+  supposed to truncate up to WHNF? I am quite puzzled.
+
++ Pg 4, last line of first para: "The fold can be composed ... the
+  sandbox" <- vague I do not understand this
+
++ Pg 4, first column, first bullet point: I do not get the discussion
+  about why sandboxThunk does not take a CC whereas sandboxFun does
+  take a cc. I mean, I could very well have a version of sandboxFun
+  without a CC argument, and do the withCC *outside* couldn't I? Or is
+  it because you are interested in passing it around, whereas you do
+  not intend to pass around a sandboxed thunk with its own CC?
+
++ Pg 4, 2nd column, LIO discussion point (4): What happens with the
+  thread label? Nothing?  Examples are desperately missing in this
+  section ...
+
++ Semantics 4: the last sentence in the first paragraph is a bit
+  disappointing -- cannot you isolate some non implementation-specific
+  description that *other* PL implementors/researchers can actually
+  use if they want to extend your work? And if the *modified* LIO
+  semantics are "out of the scope of the paper" then is it really the
+  right thing to put the LIO part in the paper and the list of
+  contributions? Is the paper supposed to be the documentation of the
+  library? 
+
++ Page 5, 2nd column, first code snippet: replace (f n) with fn.  Also
+  when explaining the inlining problems you should give to the reader
+  more context. First paragraph of 2nd col of Pg4: "To make matters
+  worse ... into a built-in". Please say that: "If it were a built-in
+  then we could tell GHC to not float over its definition, however
+  even in that case, if we create another function which is not
+  built-in then we lose this property". I think this is your point.
+
+  Moreover, the text that explains withCC1 is not very clear,(for
+  instance "with the usual extensions for arbitrary arity" migh seem
+  strange to non GHC-users) Perhaps give withCC2 as well and give the
+  example from the main function above :
+                ... 
+                withCC2 cc f n (\f n -> f n)
+
++ It is sad that withCC is not robust to program transformations, but which of 
+  those do indeed preserve cost semantics? It might be good to have a collection
+  of GHCs optimizations and characterize their safety or have "weaker versions" of
+  them that do preserve cost semantics. 
+
++ The Appendix is not self-contained either, what is the union
+  operator on \theta, what does SUB("SUB",cc) mean?  However, as I
+  mentioned before, it should be streamlined in the rest of the paper
+  and explained in more detail.
+
+
+----------------------- REVIEW 2 ---------------------
+PAPER: 108
+TITLE: Resource Limits for Haskell
+AUTHORS: Edward Yang and David Mazieres
+
+OVERALL EVALUATION: 0 (borderline paper)
+REVIEWER'S CONFIDENCE: 3 (medium)
+
+----------- REVIEW -----------
+This paper proposes an API which allows Haskell programmers
+to run code with limited resources inside their programs.
+For this purpose, the authors partially reuse the profiling
+support in GHC driven by the idea that profiling is a basis
+to reflect the resources used by some part of the program.
+Thus, they allow the programmer to define cost centers
+in a dynamic manner and define operations to react on
+situations when resource bounds are reached.
+They demonstrate by a number of benchmarks that their approach
+can be implemented with a reasonable overhead.
+
+Although this paper is an interesting contribution
+to support more reliable Haskell programs,
+it seems to be in a preliminary stage since some
+aspects are worked out in detail whereas others
+are incompletely described. For instance,
+the definition and application of cost centers
+is precisely described. However, this is only done
+for a tiny core language which is not related
+to a cost semantics. An important aspect of a resource
+limit system is the ability to react on situations
+when the limits are reached. Although the authors
+proposes primitives to handle such situations,
+they don't describe them precisely since "its semantics
+are heavily implementation dependent". Thus, if this
+is really the case, how should be a programmer use these
+features in a reliable manner? I would expect a formal
+connection between the cost semantics, the introduction
+of dynamic cost centers, and the listenCC operations
+in order to understand their meaning. In a similar way,
+the reclamation of resources is presented via an API
+but its semantics is considered as "out of scope for the paper".
+Thus, one is left with the feeling that some important
+aspects are not covered by this approach.
+
+Minor comments:
+
+P. 1: that is desirable --> that it is desirable
+
+P. 1, bottom: You use the abbreviation "IFC" without explaining it
+(in contrast to "GHC" which is explained although well known in this
+community).
+
+P. 2: ...[17] Previously,...  -->  ...[17]. Previously,...
+
+P. 3, Sect. 3.1: "IO monad to enforce ordering":
+This is a bit unclear since there is only one monadic argument.
+
+P. 4: Copyable is type-class  -->  Copyable is a type class
+
+P. 4: We use feature --> We use a feature
+
+P. 4: "we require the programmer to specify the references...":
+How is this done?
+
+P. 4: we present modified cost semantics -> we present a modified cost semantics
+
+P. 4: its semantics are heavily --> its semantics is heavily
+
+P. 5: Fig. 1: The language seems to simplified since it contains
+only cost centers, abstractions, but no application.
+So, how is it connected to real programs which you want to profile?
+In this case, you need also typing rules to distinguish cost centers
+and other objects.
+
+P. 5, Fig. 2: How is this connected to the cost semantics in Fig. 10?
+You only talk about the "new cost semantics rules" but didn't
+relate them to the "old" rules. Describe the informal meaning
+of derivable formulas.
+
+P. 6: The trickies part -> The trickiest part
+
+P. 6, Sect. 6: Explain "Valgrind Massif".
+
+P. 7: "compiled Haskell code continues to outperform interpreted languages":
+If this is a serious argument, the GHC people wouldn't put so much
+effort in their optimizers.
+
+
+----------------------- REVIEW 3 ---------------------
+PAPER: 108
+TITLE: Resource Limits for Haskell
+AUTHORS: Edward Yang and David Mazieres
+
+OVERALL EVALUATION: 0 (borderline paper)
+REVIEWER'S CONFIDENCE: 4 (high)
+
+----------- REVIEW -----------
+This is a fantastic topic.  Safe Haskell is one of the most promising
+possibilities for full-performance execution of untrusted code, and
+resource limits have been the major missing piece.
+
+The connection between profiling and resource limits had not
+previously occured to this reader and is in fact quite elegant.
+
+The evaluation of web servers in Figures 7 & 8 brings to mind one
+unfortunate aspect of the current implementation.  The server that
+hosts untrusted code (say by compiling and loading dynamic shared
+objects / plugins) must itself be compiled in profiling mode.  This
+seems rather unfortunate, but as long as the server can pass pointers
+to the untrusted code, I suppose it is unavoidable.  (Though one
+wonders about a kind of "foreign function interface" for calling
+between unprofiled and profiled code...)
+
+Also, Figure 6 should report the time with resource limits turned on
+as well as profiling.  As it stands the first sentence of the
+"Performance" subsection makes a comment about costs being "dominated"
+by profiling without giving any quantification.  If the entire nofib
+benchmark suite runs with resource limit, then those numbers should be
+reported, at least in aggregate.  Further, it would be good to see
+some microbenchmarks of allocation and GC to get a better sense for
+the overheads of profiling.
+
+Otherwise, the evaluation is adequate.
+
+The basic result is that while Safe Haskell has no runtime overhead,
+resource limits require a ~2X runtime overhead.  The competiting
+approach to the one proposed in this paper would be to have a server
+process launch all untrusted Safe Haskell code in its own process, and
+use OS-level facilities to enforce resource bounds, killing the
+process if it violates them.  
+  One nice thing to see in future work would be a comparison of the overheads of
+process creation vs. the ~2X runtime overhead of profiling, for realistic server
+applications that run untrusted code.
+
+
+Details:
+--------
+
+The code examples in section 2.1 BOTH use the names "f" and "g".  I
+know these are simply arbitrary placeholder names (e.g. foo, bar,
+baz), but since they are unrelated examples it would be good if they
+used different arbitrary placeholder names.
+
+I wasn't previously familiar with the usage of the word "finger" in
+the heap management context.  (I had to look it up.)  It's *mostly*
+clear from context, but a definition or change of terminology would be
+an improvement.
+
+The "Deallocate" bullet, pg 4 col 2: I was confused about the exact
+structure of the Map that is maintained.  Bullet (1.) describes it as
+mapping labels to deallocation actions.  But if it is to be
+maintained, such that it deallocates all references that in turn can
+access a given label, then the Map entry must be updated at a write
+barrier, correct?  But this is not mentioned in the write bullet (4.).
+
+Or is the implementation instead actually *searching* through the Map to find
+everyone who "points to" the reference being deallocated?  Is it an O(1)
+operation or O(N) in the size of the Map to do a deallocation?
+
+Section 6 first para:
+  The comment about the margin of error being "even smaller" when
+there are other threads was confusing.  Other threads have their own
+nursery areas, correct?  I assume the meaning was that on average, the
+resource limited thread in question won't be the only thread tripping
+garbage collection? 
+
+Section 6 very curtly points out the benchmarks in the Figure but
+doesn't say anything about what they do or where they came from!
+
+To this reader it still wasn't clear at the end of section 5.2 why
+heap census does not happen during garbage collection.  It seems like
+it could be turned on or off even if t was part of GC.  Further I
+wasn't clear when it *does* happen.  Immediately after GC?
+
+When the cost semantics in Figure 2 are first referenced in the prose the basic
+notation should be defined.  I wasn't familiar with the 1995 cost semantics
+paper, so I had to search around and eventually find the information back in the
+appendix of this submission.
+
+
+----------------------- REVIEW 4 ---------------------
+PAPER: 108
+TITLE: Resource Limits for Haskell
+AUTHORS: Edward Yang and David Mazieres
+
+OVERALL EVALUATION: -2 (reject)
+REVIEWER'S CONFIDENCE: 5 (expert)
+
+----------- REVIEW -----------
+Owning up since it will be obvious: I am Simon Marlow.
+
+High level points:
+
+  - It's an interesting idea, and the basic premise is sound: use a
+    cost semantics to implement resource limits.  However, I think the
+    execution needs work.
+
+  - The paper is confused about semantics.  Unfortunately GHC doesn't
+    use evaluation scoping as the paper claims (2.1), we did experiment
+    with evaluation scoping for a while but changed tack when some
+    problems were uncovered in practice.
+
+    What's strange is that the authors seem to have discovered this; in
+    section 5.1 they contradict the earlier claims, saying that GHC
+    implements a complex combining function on cost-centre stacks.
+    They say that they changed this in their implementation, but for
+    performance reasons rather than semantic ones (which is a
+    surprise).
+
+    The big problem is that they didn't update the simplifier to
+    respect the change in semantics.  Not doing this would lead to GHC
+    performing transformations that violate the different semantics.
+    For example, GHC's optimiser translates (scc cc (\x . e)) into
+    (\x. scc cc e), which is not valid under evaluation scoping.  I
+    wonder if this leads to the confusion in section 4 about let
+    floating (see below).
+
+
+Detailed comments
+
+para 2: what's the point you're making here?  I thought it was that the functional abstraction is leaky, but the paragraph went on to say that we spend a lot of time optimising functional code to counter the criticism that functional code is slow.  These two points seem unrelated to me.
+
+"On the other hand" - what was the first hand?
+
+para 3: conventional wisdom has a point, because profiling can impose non-trivial overheads on execution time and space usage, and reduce parallelism.
+
+para 4: you haven't motivated the use of resource limits yet.
+
+Your section references e.g. "(Section 3)" should be before the full stops (several instances).
+
+"The choice GHC has currently adopted for scc is dynamic scoping."
+The Sansom semantics had flat cost centres only, but GHC has since been extended to model stacks.  So I don't think you can say that GHC's semantics is equivalent to either Sansom's lexical or dynamic scoping, although it is closer to lexical scoping because (\x . scc "f" E) is equivalent to (scc "f" \x. E).  For a while we thought that evaluation scoping was the right solution, but I since discovered that it has some bad properties, and the current situation is the scheme that you see implemented in enterFunCCS() in rts/Profiling.c.  I've given a couple of talks about this (most recently in the Haskell Implementors Workshop 2012), but there's nothing published.  Some slides explaining the problems are here:
+
+http://community.haskell.org/~simonmar/Stack-traces.pdf
+
+
+3.2: If a resource limit is exceeded and the listener is triggered, is the original thread suspended?  Might that cause a deadlock?  What if it gets suspended while holding a lock, or making a foreign call?
+
+3.3: I'm somewhat surprised that you can have copy :: a -> a.  I'd expect compiler optimisations to eliminate the copying.  How do you avoid that?
+
+"can enforces" -> "can enforce"
+
+"call centres" Do you mean "cost centres"?
+
+The call to withCC in sandboxFun doesn't type-check.  I'm a bit confused here.
+
+3.3: I think this section is missing motivation.  It would really help the reader's intuition to have a concrete example to put these ideas into context.  I'm not sure how to evaluate whether what you have proposed here is a good idea, whether there are other ways to do it, or whether you need this level of complexity at all.  Under what circumstances might you need multiple threads with different cost centres to share mutable references?
+
+Figure 2: As mentioned earlier, you're basing this unfortunately on a semantics that doesn't correspond to what GHC implements.  I'm slightly surprised that you didn't notice this when experimenting with your system.  In particular, you can't ignore cost centre stacks - adding stacks is a core part of the semantics, not something you can treat orthogonally. Unfortunately I don't know what the right cost semantics for stacks is.  Perhaps what you should do is modify GHC to implement your semantics - bear in mind that there are two places where this matters: in the RTS and in the simplifier when manipulating expressions with sccs.
+
+Your let-floating example has a mistake: the last line should be "withCC cc fn".
+
+I don't understand why you think there's a problem with let-floating.
+(f n) is a function, so it can be floated anywhere: the cost centre used when it is applied will be the one from the call site, which is inside withCC. (this is the case both for evaluation scoping and for GHC's more complex semantics, which is designed such that both let-floating and inlining are semantics-preserving).
+
+If your withcc expression form has the following type:
+
+   withcc :: CostCentre -> (a -> b) -> (a -> b)
+
+can't you just implement it like this?
+
+   withcc cc f = \x -> scc cc (f x)
+
+then you don't need to give a semantics to withcc at all.
+
+This section on let-floating belongs in your implementation section.
+
+Since you have a cost semantics, can you say anything formal about the behaviour of resource limits?
+
+5.1.  So I see that you implemented evaluation scoping.  However, you probably didn't update the transformations in the simplifier to respect this change in the semantics, right?
+
+Furthermore, wouldn't you have to change scc so that it doesn't push on the stack, but just sets the current cost centre?
+
+"tracing and eliminate overhead"
+
+Post author response update: External reviewer writes:
+
+The transformation
+
+   scc f (\x . e) => \x . scc f e
+
+is *not* valid under evaluation scoping, and GHC will perform this transformation (see CoreUtils.mkTick for details).  As far as I know they didn't disable this transformation.
+
+They might have set things up so that it just about works, by using
+withCC1 (with NOLINLINE?), and not having any other sccs in the program. 
+But it's a fragile setup, and given that their semantics includes scc I'd expect their implementation to work too.
+

@@ -1,0 +1,389 @@
+I am pleased to inform you that the following submission has been accepted to
+appear at PLDI 2014:
+
+"Resource Limits for Haskell"
+
+Reviews from the Program Committee and External Review Committee are appended.
+Please use the feedback to improve your submission for publication.
+
+Detailed instructions for preparing the final version of your paper will
+follow next week.
+
+I look forward to seeing you in Edinburgh.
+
+Keshav Pingali
+PLDI'14 Program Chair
+
+
+*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=
+Meaning of Classification:
+A: I will champion this paper; it is a definite accept (advocate/accept);
+B: I can accept this paper, but I will not champion it (accept, but could reject);
+C: This paper should be rejected, though I will not fight strongly against it (reject, but could accept);
+D: Serious problems. I will argue to reject this paper (detractor).
+*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=
+
+First reviewer's review:
+
+          >>> Classification <<<
+
+C
+
+          >>> Summary of the submission <<<
+
+This paper addresses the challenge of implementing resource limits for Haskell.
+ Although resource limits are a well-established idea inter-process (via the
+OS), it is often desirable to limit resource consumption intra-process, such as
+when a (single) program services requests and wants to limit the resource
+consumption of a given request.  This paper develops a resource limit model for
+Haskell, describes its semantics and evaluates an implementation.
+
+          >>> Strengths <<<
+
+The question of how to implement resource limits is generally important.  The
+implementation presented here is reasonable and it is supported by an
+implementation in GHC and a performance evaluation.
+
+          >>> Weaknesses <<<
+
+The paper is steeped in Haskell, limiting is impact to the wider PLDI community.
+
+          >>> Evaluation <<<
+
+I feel conflicted here.  In many respects I like this paper.  The problem is
+important, the solution is nice, and the evaluation is plausible.  Your writing
+is generally very nice too.
+
+However, I'm a little frustrated because I find its hard to see what someone
+from outside the Haskell community is to take away.  How much of the solution
+is predicated on the particulars of Haskell and GHC?  How does this relate to
+work such as MVM (Usenix 2003) and JSR 121?  Can you say more about how your
+system relates to KaffeOS?  JSR 121 was an industrial-strength attempt at
+isolation and resource limits; you should have at least passing mention of it. 
+Part of the frustration is that you don't appear to make much of an effort to
+appeal to the wider PLDI audience, who may be interested in the problem but
+have only passing knowledge of Haskell. What is someone not familiar with
+Haskell and the GHC implementation supposed to make of a characterization of
+overhead as "one extra memory dereference per thunk"? The inference is that
+this is low, but for me that's just inference---I would like clarity. You
+leverage the block structured heap used by Haskell.  That's a good idea in your
+setting, but how would your ideas translate to language implementations that
+can't afford the overhead of that aspect of the GHC heap? In short, the paper
+looks too much like an ICFP cast-off.  This in itself is not intended as a
+criticism, but if it means that it is hard for the PLDI audience to relate to
+the solution and or see its relevance outside the confines of GHC, then this is
+a problem. The good news is that those concerns are principally about the way
+you've pitched it, not concerns with the ideas, so I'm guessing you could
+address these issues fairly easily when revising the paper.  Nonetheless, as a
+reviewer looking at the existing version of the paper, I'm interested in
+hearing answers to some of those; perhaps you can respond in your rebuttal.
+
+Minor nits, comments, questions:
+
+-p5 "which what" -> "which"
+
+- p6 Implementing the nursery over the linked list of blocks as per the block
+structured heap would not fly in many high performance VMs because the cost of
+indirecting to the block header to identify the generation is too high.  Not a
+big deal, but this speaks to my broader question about to what extent your
+ideas will play out in other settings.
+
+- p6 "implementation resource containers" -> "implementation of resource
+containers"
+
+- p6 "The conventional design for a..." Not true. Many mainstream GCs use
+multiple large discontiguous regions, separately acquired from the OS.
+
+- p8 Fig 7 -> Table 1
+
+- p8 Fig 7 "Runtime" -> "time" or "running time" ("runtime" is a noun, refers
+to GHC in your case).
+
+*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*
+
+Second reviewer's review:
+
+          >>> Classification <<<
+
+B
+
+          >>> Summary of the submission <<<
+
+This paper extends Haskell and the GHC implementation with a way to
+bound the memory consumption of subcomputations (functions, threads,
+whatever) via explicit (albeit monadic) resource containers.
+Allocation is charged to the allocator and thunk evaluation to the
+creator of the thunk. Explicit "with-resource-container" constructs
+allow switching the container by the programmer. Exhaustion is
+detected by the memory allocator (at the block level, not an
+individual allocation) and reified as an asynchronous exception. An
+implementation has low overhead (3-5%) and leverages prior work on
+space-profiling Haskell programs and separate prior work on a monad
+for tracking information flow (so any thread that has access to a
+resource container is killed if that container is exhausted and
+reclaimed).
+
+          >>> Strengths <<<
+
+* A does-it-all paper on an important problem: thoughtful design,
+ formal semantics, real implementation and evaluation
+
+* Particularly nice description of the design and how it complements
+ prior work
+
+* Good integration into a real system, with discussion of how GHC's
+ block allocator was well-suited for the work
+
+          >>> Weaknesses <<<
+
+* I expected much more discussion about how the approach interacts
+ with the optimizer, particularly issues like strictness analysis. I
+ would hope for a much more rigorous argument that the
+ opaque-built-in approach is always (usually?) sufficient.
+
+* Space limits are in non-programmer-visible terms like "2
+ Megabytes", which is practical, but doesn't actually "mean" anything
+ in Haskell. This is probably inherent, but not what I expected in
+ the early pages of the paper.
+
+          >>> Evaluation <<<
+
+Overall I really like this work and lean toward recommending that PLDI
+accept it. Limiting space consumption is an important problem and
+this work is a nice complement to prior work. This work also dealt
+well with important Haskell issues, most importantly laziness, better
+than I would have expected -- it actually works to use resource
+containers in lazy languages, which is not obvious!
+
+So in the interest of improving the paper, let me focus on the two
+weaknesses listed above and one more substantive comment:
+
+* The optimization issues seem like a "big deal" that deserves more
+ discussion. I'm particularly interested in strictness -- we are
+ used to being able to make code strict whenever it is meaning
+ preserving, but it clearly affects memory accounting. Can we reason
+ about when it is legal, e.g., if the resource container of the thunk
+ and the caller are the same? These are issues I was already
+ wondering on page 2.
+
+* I think the "by limits we mean something like 2MB" issue can just be
+ handled with writing. In Section 2, I took the forward pointer to
+ Section 4.3 about what a "limit" is to be something different and
+ more semantic. I'm also interested in how a computation might
+ divide up its container budget to subcomputations (perhaps different
+ threads or perhaps just different lazy computations). Are there
+ ways to manipulate the current limit algebraically, e.g., "give 1/n
+ - k of my limit to each of these other containers I'm creating"?
+
+* The title might be a bit broad since "space" is only one resource
+ and much/most of the work in this paper is specific to space.
+
+A few other details:
+
+* page 2: "Since thunks are not values" -- I wasn't sure exactly what
+ was meant by this phrase -- it seemed to confuse more than help. In
+ some senses, they are values when you write them with the brackets.
+
+* page 3: "If there's not enough space to calculate the value of this
+ thunk, it might as well be bottom!" -- I didn't understand the line
+ of reasoning here.
+
+* Theorem 2.2: Is this actually true? Do we want it to be true?
+ Can't I catch an asynchronous exception and handle it with a
+ non-terminating computation that does not allocate?
+
+* page 5: "complex assessment of the entire heap" -- it's a little
+ complex, sure, but fairly easy to understand. Is it more complex in
+ a lazy language? I'm not sure.
+
+* page 6: The current scalability bottleneck in the collector seems
+ fairly easy to fix -- just need a scalable bag of containers needing
+ work. Of course, that's easy for a reviewer to say. 
+
+* page 6: The last paragraph of 4.2 is fine, but a clearly-bad idea to
+ me, so this paragraph might be removable.
+
+* page 7: 4.4 might be a little too short. How robust/secure is this
+ actually? Can you write an adversarial program that exploits this?
+
+And a handful of typos:
+
+* page 2: container." should be container?"
+
+* page 5: "which what resource containers"
+
+* page 5: "Instead we, opt"
+
+* lots of citations need capitalization for proper nouns
+
+*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*
+
+Third reviewer's review:
+
+          >>> Classification <<<
+
+B
+
+          >>> Summary of the submission <<<
+
+The paper presents a language extension for Haskell that allows programmers to
+precisely account for memory used during program execution. The accounting is
+done by allocating resource counters and attributing (stack and heap) memory
+costs to them. Resource counters allow very fine-grain control over resources
+inside a single process. There are various challenges in terms of deciding
+which resource container should be attributed for each operation that takes
+memory, how should overflow exceptions behave, and how to implement resource
+counting and resource reclamation with minimal overhead and maximal precision. 
+The authors implement their extension withing the GHC compiler and evaluate it
+over a benchmark suite, demonstrating its precision and showing its benefits
+for detecting memory leakage and fixing bugs by enforcing safe bounds.
+
+          >>> Strengths <<<
+
+* The ability to account for resources is important for debugging and ensuring
+robustness. The paper tackles a whole array of challenges (clear semantics,
+attribution, reclamation, implementation overhead and precision) and provides
+interesting solutions.
+
+* The paper is well-written. I especially like the fact that you specify the
+semantics over a minimal functional language, which makes the paper accessible
+to readers without background in Haskell.
+
+* The approach is implemented inside an actual compiler and evaluated over real
+code and real applications.
+
+          >>> Weaknesses <<<
+
+* The solution is specific to functional languages.
+
+          >>> Evaluation <<<
+
+* How do you set the limits for a resource container? The minimal functional
+language doesn't show that. I guess that the actual extension to Haskell has
+newRC with a limit argument.
+
+* In Section 2, you rush to consider various alternative designs for the
+solution. I think you should spend a couple of paragraph to explain the problem
+in more depth - what would you ideally like to achieve and what are the
+challenges (e.g., accounting for both stack and heap memory, obtaining precise
+estimates for used resources, implementation challenges like integration with
+GC)?
+
+* In Figure 2, what is the very last superscript 'j' for?
+
+* Page 5, "Hence, we conservatively track which [what] resource containers..."
+* Page 7, "After all, they are only ever [are] evaluated once..."
+* Page 9, "...must have a fixed quote[quota]; otherwise,..."
+* Page 10, [13] - where is it published?
+
+*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*
+
+Fourth reviewer's review:
+
+          >>> Classification <<<
+
+B
+
+          >>> Summary of the submission <<<
+
+The paper describes adding runtime resource limiting and
+reclamation to GHC Haskell. Included are cost attribution semantics
+based on the existing profiling semantics.
+
+          >>> Strengths <<<
+
+Clear semantics and discussion of the implementation and
+issues that must be addressed in the runtime system. Good explanation
+of aspects of the problem unique to lazy evaluation. Solves an
+important problem for many interesting applications in a way that is
+more efficient and easier to use then existing options.
+
+          >>> Weaknesses <<<
+
+A few aspects of the implementation are unclear including
+the interaction with the threaded runtime, accounting for foreign
+allocation, and the precise API given to user applications. In addition
+some of the writing could be improved.
+
+          >>> Evaluation <<<
+
+In the introduction, a better case should be made for managing resource
+limits at the language runtime level. The claim that "processes are too
+expensive and coarse-grained" assumes an OS implementation. A much
+stronger argument would be more specific about either the particular
+costs or a particular OS. Why can managing resources at the language
+level avoid these costs? Are these costs inherent to all
+implementations or notions of processes? Is the benefit similar to
+Singularity OS's software isolated processes (language-level, but also
+OS level support)? The examples given in the introduction are not bad,
+but it should be clearer why the status quo multi-process application
+approach is not viable. For instance, can copy-on-write page sharing
+among processes avoid most of the overhead of duplication of memory for
+multiple processes? Does the time overhead of this mechanism cost too
+much?
+
+The first paragraph of section 2 ("Resource limits") is unclear and
+needs to be reworded. Why is "allocator-pays" mentioned? What two
+design choices?
+
+In section 8 of Marlow et al.'s paper "Runtime Support for Multicore
+Haskell" it mentions that the default strategy for black holes in GHC
+allows for an unbounded amount of duplicated work. This is due to
+avoiding an atomic operation when forcing a thunk and instead racing
+with other threads that may encounter the thunk. The current paper does
+not seem to mention (unless I missed it!) whether the reported
+implementation is using the threaded runtime system. I can imagine this
+black hole issue could interact with accounting for allocation, though I
+suspect that it will correctly count the duplicated work as it should.
+This does open the remote possibility that a computation that *should*
+fit within the limits fails to do so non-deterministically, depending on
+the outcome of a data race. The paper needs to make clear whether it is
+using the threaded runtime system, and discuss the implications of the
+choice. How are costs synchronized? What is the overhead of this? If
+only the sequential runtime is being used, the difficulties of
+supporting the threaded runtime should be mentioned.
+
+Another point to clarify is how foreign allocations are handled. If a
+library uses the foreign function interface to call into a C library
+that does allocation, is this memory use accounted for? Could malicious
+code exploit "safe" libraries to allocate more then allowed? Similarly,
+if I recall correctly, allocations from integer-gmp do not reside
+completely in the Haskell heap. Are these subject to over-allocation?
+There may be excellent answers to these questions, but they are not
+mentioned in the paper.
+
+Section 3.1 mentions restricting effects and the API given in figure 5
+and section 3.2 use a `CM` type for a "container monad". Section 4,
+however, has examples that use this API as though the types were `IO`
+actions. Indeed, the type for `withRC1` is given as:
+
+  withRC1 :: RC -> a -> (a -> IO b) -> IO b
+
+While we would expect from the API given in figure 5 that the type would be:
+
+  withRC1 :: RC -> a -> (a -> CM b) -> CM b
+
+This should all be made consistent. I would expect that there should be
+some `runCM :: CM a -> IO a` function that lifts `CM` actions to `IO`
+actions.
+
+Section 3 suffers in clarity by not having worked examples. The API is
+given, but readers will have difficulty understanding unfamiliar Haskell
+syntax and will need some examples to help guide their understanding.
+
+Section 3.2 mentions a `Transfer` function type that comes from a
+library of copy functions. Some more details on why different transfer
+functions are needed would be helpful. Similarly for the claim that
+`rcCopyResult` will copy a "small value". How is it enforced that this
+value is "small"? Why is `Transfer` not needed in this case?
+
+Section 4.5's discussion of CAFs needs a more concrete example of why
+one would have a program with an infinite data structure. This will be
+quite unfamiliar to non-Haskell programmers but would be cleared up
+easily with an example such as a lazy prime number table.
+
+Figure 9 is missing thousands separator commas in the first row and
+column.
+
+*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*
+
