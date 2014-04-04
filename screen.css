@@ -45,7 +45,7 @@ h3{font-weight:normal;margin-bottom:0.2em;text-decoration:underline}
 #content h2 {padding-left: 0; border-bottom:none; text-align:right; padding-right:80%;}
 #content li {margin-top:1em;}
 #content table {margin-left:2em;}
-#content h3 {font-family:sans-serif; color:#000; font-weight:normal; border-left: 2em solid #CCC; padding-left:1em}
+#content h3 {color:#000; font-weight:normal; }
 table {border-collapse: collapse}
 thead tr th {border-bottom: 1px solid #CCC;}
 tbody th {text-align:right; padding-right:2em;}
