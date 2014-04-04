@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="screen.css" media="screen,projection" type="text/css" />
     <link rel="openid.server" href="https://pip.verisignlabs.com/server">
     <link rel="openid.delegate" href="http://edwardzyang.pip.verisignlabs.com/">
+    <link href='http://fonts.googleapis.com/css?family=Gentium+Book+Basic' rel='stylesheet' type='text/css'>
 </head>
 <body>
 <div id="container">
@@ -18,8 +19,58 @@
     Massachusetts Institute of Technology 2012<br />
     University of Cambridge 2011 (<a href="http://gecd.mit.edu/go_abroad/study/explore/cme">CME</a>)<br />
     <a href="ezyang-resume.pdf">Résumé</a> ∙ <a href="ezyang-cv.pdf">Curriculum Vitae</a> ∙ <a href="http://scholar.google.com/citations?user=CXlrXP8AAAAJ">Scholar</a><br />
-    <a href="http://blog.ezyang.com">Blog</a> ∙ <a href="http://twitter.com/ezyang">Twitter</a> ∙ <a href="https://plus.google.com/u/0/100791238593914710520/posts">G+</a> ∙ <a href="https://www.facebook.com/ezyang">FB</a> ∙ <a href="http://ezyang.tumblr.com">Tumblr</a> ∙ <a href="https://github.com/ezyang">GitHub</a><br />
+    <a href="http://blog.ezyang.com">Blog</a> ∙ <a href="http://twitter.com/ezyang">Twitter</a> ∙ <a href="https://plus.google.com/u/0/100791238593914710520/posts">G+</a> ∙ <a href="https://www.facebook.com/ezyang">FB</a> ∙ <a href="http://ezyang.tumblr.com">Tumblr</a> ∙ <a href="https://github.com/ezyang">GitHub</a> ∙ <a href="https://launchpad.net/ezyang">LP</a><br />
 </div>
+
+<table class="blurb">
+    <tr><th><img src="photo.png" /></th><td><p style="margin-top:0.5em;">I am a second year PhD student at Stanford advised by <a href="http://www.scs.stanford.edu/~dm/">David Mazières</a>
+and <a href="http://theory.stanford.edu/people/jcm/">John Mitchell</a>.  I am a proud member
+of the <a href="http://www.scs.stanford.edu/">Secure Computer Systems</a> group.
+I'm interested in applying operating system mechanisms (hardware
+isolation, dynamic resource limits) to the design and construction
+programming languages, and vice versa (type systems, formal
+verification, information flow control).  I'm a big fan of Haskell, a
+non-strict purely functional language.</p>
+<p><small>(I use a <a href="hardware.html">ThinkPad X61 Tablet</a>. Find me on <code>freenode</code> as <code>ezyang</code>,
+    or on <a href="http://www.strava.com/athletes/3249423">Strava</a>, <a href="http://stackoverflow.com/users/23845/edward-z-yang">Stack Overflow</a>, <a href="http://en.wikipedia.org/wiki/User:Edward_Z._Yang">Wikipedia</a>, <a href="https://www.tripit.com/people/ezyang">Tripit</a>, <a href="http://www.reddit.com/user/ezyang/">Reddit</a>, <a href="http://www.linkedin.com/in/ezyang">LinkedIn</a>, <a href="http://www.mendeley.com/profiles/edward-yang/">Mendeley</a>.)</small></p>
+</td></tr>
+</table>
+
+<h2>What are my collaborators and I working on?</h2>
+<h3>Breaking barriers</h3>
+Abstraction is a fundamental tenet of software engineering, and it is often enforced through mechanisms such as information hiding.  For large software projects, such facilities are considered essential; for security abstractions, this enforcement is mandatory.  However, real software engineers repeatedly and profitably violate abstraction: languages that are too inflexible to allow such violations often force programmers to resort to solutions that are worse than the disease.  What is going on here? We want to find out.  Here are some <a href="https://github.com/ezyang/breaking-barriers">preliminary thoughts.</a>
+
+<h3>A method for adding IFC to existing programming languages</h3>
+Information-flow control is a promising discipline for enforcing the security of systems. Unfortunately, adding IFC often requires invasive changes to the semantics of the host language. We're working on a general method for adding coarse-grained IFC to a language, while requiring only minimal changes to our semantics.  Inspired by <a href="http://people.cs.uchicago.edu/~jacobm/papers/multilang/matthews-findler-popl07-bw.pdf">Matthews' and Findler's</a> work on multi-language semantics, our approach is to take a minimal IFC calculus and combine it with the target language to achieve an IFC-enabled language.  We hope to validate this approach by showing that the noninterference proof is parametric in the source of language, and that the resulting semantics accurately describe existing IFC systems.  Here is a <a href="http://web.mit.edu/~ezyang/Public/IFCInside.pdf">preprint on the topic</a>.
+
+<h3>The runtime system of a lazy, purely functional language</h3>
+GHC's runtime system is a complicated beast, its many lines of code spanning many different concerns.  How does parallelism and concurrency work?  How does the garbage collector work?  How is lazy evaluation implemented?  These are questions whose answers are scattered throughout the various literature that has come out of the GHC project over the years.  We're working on a journal paper which ties all of this literature together, with the hopes that it will be useful for other designers of runtime systems for functional languages (and perhaps non-functional ones too).  Here is <a href="http://web.mit.edu/~ezyang/Public/jfp-ghc-rts.pdf">a draft version of the paper</a>.
+
+<h2>Recent publications</h2>
+
+<ul class="papers">
+    <li>Edward Z. Yang, David Mazières. <strong><a href="rlimits.html">Space Limits for Haskell</a></strong>. In <em>Proceedings of the 35th annual ACM SIGPLAN conference on Programming Language Design and Implementation</em>. To appear.<br />
+    [ <a href="papers/ezyang14-rlimits.pdf">draft</a> | <a href="papers/ezyang14-rlimits.bib">bibtex</a> | <a href="reviews/pldi14-rlimits.txt">reviews</a>/<a href="reviews/pldi14-rlimits-rebuttal.txt">rebuttal</a> (<a href="reviews/pldi14-aec-rlimits.txt">aec</a>, <a href="reviews/icfp13-rlimits.txt">icfp13</a>/<a href="reviews/icfp13-rlimits-rebuttal.txt">rebuttal</a>) ]</li>
+    <li>Deian Stefan, Pablo Buiras, Edward Z. Yang, Amit Levy, David Terei, Alejandro Russo and David Mazières.  <strong>Eliminating Cache-Based Timing Attacks with Instruction-Based Scheduling</strong>. In <em>Proceedings of the 18th European Symposium on Research in Computer Security (ESORICS 2013)</em>. September 2013.<br />
+    [ <a href="papers/stefan13-scheduling.pdf">paper</a> (<a href="papers/stefan13-scheduling-extended.pdf">ext</a>) | <a href="papers/stefan13-scheduling.bib">bibtex</a> | <a href="reviews/esorics13-scheduling.txt">reviews</a> (<a href="reviews/csf13-scheduling.txt">csf13</a>, <a href="reviews/oakland13-scheduling.txt">oakland13</a>) ]</li>
+    <li>Erik D. Demaine, Pavel Panchekha, David Wilson, Edward Z. Yang. <strong>Blame Trees</strong>. In <em>Proceedings of the 12th International Symposium on Algorithms and Data Structures (WADS 2013).</em> August 2013.<br />
+    [ <a href="papers/demaine13-blametrees.pdf">draft</a> | <a href="papers/demaine13-blametrees.bib">bibtex</a> | <a href="reviews/wads13-blametrees.txt">reviews</a> | <a href="slides/ezyang13-blametrees-slides.pdf">slides</a> | <a href="http://youtu.be/f8e-QE6Gus8">video</a> ]
+    <li>Edward Z. Yang, Deian Stefan, John Mitchell, David Mazières, Petr Marchenko, Brad Karp. <strong>Toward Principled Browser Security</strong>. In <em>Proceedings of The 14th Workshop on Hot Topics in Operating Systems (HotOS XIV), USENIX 2013.</em> May 2013.<br />
+    [ <a href="papers/ezyang13-browser.pdf">paper</a> | <a href="papers/ezyang13-browser.bib">bibtex</a> | <a href="reviews/hotos13-browser.txt">reviews</a> ]</li>
+    <li>Edward Z. Yang. <strong>Academic software reuse, an experience report</strong>.  6.UAP report advised by Adam Chlipala. May 2012.<br />
+    [ <a href="papers/ezyang12-reuse.pdf">paper</a> | <a href="papers/ezyang12-reuse.bib">bibtex</a> ]
+</ul>
+
+<h2>What do I do in my free time?</h2>
+<ul>
+    <li>I play the oboe and am a member of the <a href="http://sso.stanford.edu/">Stanford Symphony Orchestra</a>.  I quite like <a href="http://www.public.asu.edu/~schuring/Oboe/Reedguide.html">Martin Schuring's guide for reed adjustment</a>.</li>
+    <li>I play contract bridge (find me on <a href="http://www.bridgebase.com/">BBO</a> as ezyang or at the <a href="http://studentlife42210.orgsync.com/org/stanfordbridgeclub">Stanford Bridge Club</a>).  Recently, with teammates Frank Lin, Ling-Ling Zhang and Erli Zhou, we <a href="http://www.acbl.org/news_archive.php?id=931">qualified for the 2014 Collegiate Championship</a>.</li>
+    <li>I'm currently learning how to <a href="http://socialdance.stanford.edu/">social dance</a>.</li>
+    <li>I help run the <a href="ringing.html">Bay Area Guild of Change Ringers</a>, where we do British change ringing on handbells.</li>
+</ul>
+
+<h2>Some projects I'm associated with...</h2>
+
 <table id="projects">
     <tr><th><a href="http://metro.ezyang.com">Metro Maps<br/><small>of the News</small></a></th>
         <td>a visual metaphor for interconnected story lines<div class="extra">(joint work with <a href="http://www.cs.cmu.edu/~dshahaf/">Dafna Shahaf</a>, <a href="https://twitter.com/math4origami">Russell Chou</a> and <a href="http://www.quora.com/Jacob-Jensen">Jacob Jensen</a>)</div></td></tr>
@@ -44,56 +95,7 @@
 
     <tr><th><a href="http://themonadreader.wordpress.com/">Monad.Reader</a></th>
         <td>a magazine about all things Haskell<div class="extra">(I’m editor: send me a note if you want to write something!)</div></td></tr>
-
-    <tr class="blurb"><th><img src="photo.jpg" /></th><td>I am a second year PhD student at Stanford advised by <a href="http://www.scs.stanford.edu/~dm/">David Mazières</a>
-and <a href="http://theory.stanford.edu/people/jcm/">John Mitchell</a>.  I am a proud member
-of the <a href="http://www.scs.stanford.edu/">Secure Computer Systems</a> group.
-I'm interested in applying operating system mechanisms (hardware
-isolation, dynamic resource limits) to the design and construction
-programming languages, and vice versa (type systems, formal
-verification, information flow control).  I'm a big fan of Haskell, a
-non-strict purely functional language.<br />
-<small>(I use a <a href="hardware.html">ThinkPad X61 Tablet</a>. Find me on <code>freenode</code> as <code>ezyang</code>,
-    or on <a href="http://www.strava.com/athletes/3249423">Strava</a>, <a href="http://stackoverflow.com/users/23845/edward-z-yang">Stack Overflow</a>, <a href="http://en.wikipedia.org/wiki/User:Edward_Z._Yang">Wikipedia</a>, <a href="https://www.tripit.com/people/ezyang">Tripit</a>, <a href="http://www.reddit.com/user/ezyang/">Reddit</a>, <a href="http://www.linkedin.com/in/ezyang">LinkedIn</a>, <a href="http://www.mendeley.com/profiles/edward-yang/">Mendeley</a>.)</small>
-</td></tr>
-    <tr><td colspan="2" id="working">What are my collaborators and I working on?</td></tr>
-    <tr><th>&nbsp;</sub></th>
-        <td>a method for adding IFC to existing programming languages
-            <div class="extra">Information-flow control is a promising discipline for enforcing the security of systems. Unfortunately, adding IFC often requires invasive changes to the semantics of the host language. We're working on a general method for adding coarse-grained IFC to a language, while requiring only minimal changes to our semantics.  Inspired by <a href="http://people.cs.uchicago.edu/~jacobm/papers/multilang/matthews-findler-popl07-bw.pdf">Matthews' and Findler's</a> work on multi-language semantics, our approach is to take a minimal IFC calculus and combine it with the target language to achieve an IFC-enabled language.  We hope to validate this approach by showing that the noninterference proof is parametric in the source of language, and that the resulting semantics accurately describe existing IFC systems.</div></tr>
-
-    <!--
-    <tr><th>&nbsp;</th>
-        <td>an investigation of the sociological principles of API design
-        <div class="extra">social coding websites like GitHub offer a corpus of code of unprecedented size; with this data, can we find out how developers use APIs in practice, and how we can construct newer, safer APIs that they are likely to adopt?</div></td></tr>
-
-    <tr><th>&nbsp;</th>
-        <td>a category-theoretic approach to parallel loop optimizations
-            <div class="extra">there are a huge number of ad-hoc loop optimizations in the literature.  we're looking at using category theory to provide a framework for optimizations that is more principled than existing rewrite systems.</div></td></tr>
-            -->
 </table>
-
-
-<div id="working" style="margin-bottom:1em;margin-top:2em;">What do I do in my free time?</div>
-<ul class="papers">
-    <li>I play the oboe and am a member of the <a href="http://sso.stanford.edu/">Stanford Symphony Orchestra</a>.</li>
-    <li>I help run the <a href="ringing.html">Bay Area Guild of Change Ringers</a>, where we do British change ringing on handbells.</li>
-    <li>I play contract bridge (find me on <a href="http://www.bridgebase.com/">BBO</a> as ezyang or at the <a href="http://studentlife42210.orgsync.com/org/stanfordbridgeclub">Stanford Bridge Club</a>).</li>
-</ul>
-
-<div id="working" style="margin-bottom:1em;margin-top:2em;">Recent publications</div>
-
-<ul class="papers">
-    <li>Edward Z. Yang, David Mazières. <strong><a href="rlimits.html">Space Limits for Haskell</a></strong>. In <em>Proceedings of the 35th annual ACM SIGPLAN conference on Programming Language Design and Implementation</em>. To appear.<br />
-    [ <a href="papers/ezyang14-rlimits.pdf">draft</a> | <a href="papers/ezyang14-rlimits.bib">bibtex</a> | <a href="reviews/pldi14-rlimits.txt">reviews</a>/<a href="reviews/pldi14-rlimits-rebuttal.txt">rebuttal</a> (<a href="reviews/pldi14-aec-rlimits.txt">aec</a>, <a href="reviews/icfp13-rlimits.txt">icfp13</a>/<a href="reviews/icfp13-rlimits-rebuttal.txt">rebuttal</a>) ]</li>
-    <li>Deian Stefan, Pablo Buiras, Edward Z. Yang, Amit Levy, David Terei, Alejandro Russo and David Mazières.  <strong>Eliminating Cache-Based Timing Attacks with Instruction-Based Scheduling</strong>. In <em>Proceedings of the 18th European Symposium on Research in Computer Security (ESORICS 2013)</em>. September 2013.<br />
-    [ <a href="papers/stefan13-scheduling.pdf">paper</a> (<a href="papers/stefan13-scheduling-extended.pdf">ext</a>) | <a href="papers/stefan13-scheduling.bib">bibtex</a> | <a href="reviews/esorics13-scheduling.txt">reviews</a> (<a href="reviews/csf13-scheduling.txt">csf13</a>, <a href="reviews/oakland13-scheduling.txt">oakland13</a>) ]</li>
-    <li>Erik D. Demaine, Pavel Panchekha, David Wilson, Edward Z. Yang. <strong>Blame Trees</strong>. In <em>Proceedings of the 12th International Symposium on Algorithms and Data Structures (WADS 2013).</em> August 2013.<br />
-    [ <a href="papers/demaine13-blametrees.pdf">draft</a> | <a href="papers/demaine13-blametrees.bib">bibtex</a> | <a href="reviews/wads13-blametrees.txt">reviews</a> | <a href="slides/ezyang13-blametrees-slides.pdf">slides</a> | <a href="http://youtu.be/f8e-QE6Gus8">video</a> ]
-    <li>Edward Z. Yang, Deian Stefan, John Mitchell, David Mazières, Petr Marchenko, Brad Karp. <strong>Toward Principled Browser Security</strong>. In <em>Proceedings of The 14th Workshop on Hot Topics in Operating Systems (HotOS XIV), USENIX 2013.</em> May 2013.<br />
-    [ <a href="papers/ezyang13-browser.pdf">paper</a> | <a href="papers/ezyang13-browser.bib">bibtex</a> | <a href="reviews/hotos13-browser.txt">reviews</a> ]</li>
-    <li>Edward Z. Yang. <strong>Academic software reuse, an experience report</strong>.  6.UAP report advised by Adam Chlipala. May 2012.<br />
-    [ <a href="papers/ezyang12-reuse.pdf">paper</a> | <a href="papers/ezyang12-reuse.bib">bibtex</a> ]
-</ul>
 
 <ul class="compact">
     <li><a href="http://hackage.haskell.org/package/Cabal"
