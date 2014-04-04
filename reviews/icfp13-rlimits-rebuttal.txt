@@ -1,0 +1,36 @@
+We'd like to thank the reviewers for their helpful comments.  Overall,
+the reviews requested that the paper be augmented with more examples of
+usage of the system and more formal semantics for various components
+(the listeners, the IFC system and the incremental heap census.)  We
+wholeheartedly agree that more concrete examples of our system in use
+would be a great addition to the paper.  We also agree that additional
+semantics, especially for our IFC mechanism, would be useful.  We note,
+however, that a semantics for the listeners would be unsatisfying, in
+the sense that it would not allow a programmer to predict *when* a
+resource limit was hit; the timing of such events is implementation
+dependent. The goal of resource limits is to achieve overall system
+stability, rather than attempt to permit precise reasoning over specific
+fragments of code.
+
+Reviewer 4 identified a major factual error in the paper: the claim that
+GHC uses evaluation scoping.  We would like to argue that while this
+problem is severe, it is not fatal to our implementation of resource
+limits.  The reviewer states that GHC's simplifier performs
+transformations that violate evaluation scoping; Section 4 refers to
+this problem, although our discussion mislabels it as a "let-floating
+problem."  In this section, we described a workaround which prevents the
+simplifier performing the unsound transformations.  The alternate
+approach suggested was to modify the simplifier, but when considering
+this situation we felt that this could result in wide-ranging
+performance problems from missed optimizations.  Beyond this, the only
+other change necessary to implement dynamic scoping is the noted change
+to enterFunCCS(); this modification is present in our implementation,
+though it is inaccurately described in the paper as a "performance
+optimization".  To sum up, our implementation has modified the RTS to
+recover evaluation scoping and eliminate stacks, and utilizes a
+workaround to prevent incorrect optimizations from the simplifier: thus,
+we argue that our implementation does faithfully implement resource
+limits, although the mechanism by which this was achieved was
+incorrectly explained in the paper.  We plan on fixing the explanation
+in the paper.
+

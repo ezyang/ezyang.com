@@ -1,0 +1,90 @@
+We thank the reviewers for their feedback. In this response, we'd like
+to answer some of the technical questions posed in the reviews.
+
+"How much of the solution is predicated on the particulars of Haskell
+and GHC?"
+
+We rely on three features: the ability to isolate code (Safe Haskell),
+the ability to terminate threads (asynchronous exceptions) and the
+ability to create multiple regions within a heap cheaply
+(block-structured heap).
+
+"How does this relate to work such as MVM (Usenix 2003) and JSR 121?"
+
+MVM/JSR-121 are intended to enforce isolation (comparable to Safe
+Haskell), not resource limits.  Traditional operating system rlimits
+could be applied to the jlogin processes used by MVM, but this would not
+say anything about memory usage inside the isolates in the MVM.
+
+"Can you say more about how your system relates to KaffeOS?"
+
+While our system keeps all containers in one heap, KaffeOS mandates
+separate heaps per container.  The tradeoff is that while each heap can
+be garbage-collected separately, KaffeOS must then treat inter-container
+references specially, using a write barrier to detect these references
+and replace them with entry/exit items.  Our system does not require any
+extra write barriers.
+
+"[H]ow would your ideas translate to language implementations that can't
+afford [a block structured heap]?"
+
+Our implementation is specific to a block-structured heap, so an
+alternate implementation strategy would have to be developed for these
+languages. (We think this should be possible: [1] suggests that many of
+the same benefits of a block-structured heap can be replicated by
+explicitly manipulating page tables, which can be done efficiently using
+a system like Dune. [2])
+
+[1] Marlow, S., Harris, T., James, R.P., Peyton Jones, S." Parallel
+generational-copying garbage collection with a block-structured heap."
+ISMM'08
+[2] Belay, A., Bittau, A., Mashtizadeh, A., Terei, D., Mazières, D.,
+Kozyrakis, C. "Dune: Safe User-level Access to Privileged CPU Features."
+OSDI'12
+
+"Can we reason about when [strictness transformation] is legal?"
+
+It is always legal: "Results are independent of evaluation order", to
+quote Sansom '95. (Of course, if you end up evaluating more than you
+would have otherwise, the cost will be different, but the attribution
+will be the same.)
+
+"Can't I catch an asynchronous exception and handle it with a
+non-terminating computation that does not allocate?"
+
+Correct: we will amend the paper to discuss the fact that frames which
+catch heap overflows are also considered trusted (like exception
+masking).
+
+"How are costs synchronized?"
+
+As our system accounts for costs at the coarse granularity of a block,
+costs are only charged when a block is allocated from a global block
+allocator, which is already protected by a lock.  Since this can be
+expensive, each container maintains a per-thread pool of blocks (the
+nursery), allowing most allocations to be lock-free.  The overhead is a
+fixed memory cost per-container for these blocks.  Memory is returned to
+the system only during a stop-the-world GC.
+
+"If a library uses the foreign function interface to call into a C
+library that does allocation, is this memory use accounted for?  Could
+malicious code exploit "safe" libraries to allocate more then allowed?"
+
+Our system only accounts for heap memory.  Thus, an FFI binding could
+leak memory.  However, an FFI interface which results in C allocation
+constitutes IO and is not trusted by Safe Haskell.  The writer of a
+trusted wrapper for the interface is responsible for tracking external
+allocations.
+
+"Allocations from integer-gmp do not reside completely in the Haskell
+heap. Are these subject to over-allocation?"
+
+This is not correct: GMP's heap allocation function is overloaded to
+allocate onto the heap; any other allocations are temporary allocations
+on the C stack.
+
+"How is it enforced that this value is "small"? Why is `Transfer` not
+needed in this case?"
+
+This is a typo; the function should also accept a transfer function.
+The value is only small by convention.
