@@ -28,17 +28,24 @@ Our system is implemented in GHC, a production-strength compiler for Haskell.</p
 </div>
 <h2>Code</h2>
 <div class="cb">
-    <p>We are participating in the PLDI'14 artifact evaluation process,
-    so if you are interested in trying out our system with minimal
-    fuss, check out our <a href="https://github.com/ezyang/pldi14-rlimits-aec">artifact
-        description page</a> for a ready-made VM image, a tutorial and evaluation code
-    from the paper.
-    </p>
-    <p>To get and compile the code yourself, check the <code>ghc-rlimits-20130210</code>
-    tag of <a href="https://github.com/ezyang/ghc/tree/ghc-rlimits-20130210">ghc</a>
-    and <a href="https://github.com/ezyang/packages-integer-gmp/commit/26d4064328ba8e62aa4d218c2367ceb22c2169a9">this patch to integer-gmp</a> (set your other branches to <code>ghc-7.8</code>).  The compilation process is the same
-    as for <a href="https://ghc.haskell.org/trac/ghc/wiki/Building">normal GHC</a>, with the caveat that it will not work
-    for 32-bit platforms.</p>
+    <p>Here is the source distribution for GHC 7.8.2 with resource limits:</p>
+    <ul>
+        <li><a href="rlimits/ghc-7.8.2~rlimits20140509-src.tar.bz2">ghc-7.8.2~rlimits-src.tar.bz2</a>.  This provides the compiler and a minimal set of libraries.  For more information on building, see the <a href="http://hackage.haskell.org/trac/ghc/wiki/Building">building guide.</a></li>
+        <li><a href="rlimits/ghc-7.8.2~rlimits20140509-testsuite.tar.bz2">ghc-7.8.2~rlimits20140509-testsuite.tar.bz2</a>.  If you unpack this tarball on top of the above then you will be able to run the testsuite.</li>
+        <li><a href="rlimits/ghc-7.8.2~rlimits20140509-windows-extra-src.tar.bz2">ghc-7.8.2~rlimits20140509-windows-extra-src.tar.bz2</a>.  This provides extra build tools which are a requirement for building on Windows. Simply unpack this tarball on top of the regular source distribution.  This tarball should be the same as <a href="https://www.haskell.org/ghc/dist/7.8.2/ghc-7.8.2-windows-extra-src.tar.bz2">the official distribution</a>.</li>
+    </ul>
+    <p>Known bugs:</p>
+    <ul>
+        <li>Does not work on 32-bit architectures</li>
+        <li>GHCi does not work</li>
+        <li>Compacting garbage collection does not work</li>
+    </ul>
+    <p>If you are interested in trying out our system with minimal
+    fuss, check out the ready-made VM image we submitted to the <a href="https://github.com/ezyang/pldi14-rlimits-aec">PLDI artifact evaluation process</a>.  The VM is slightly out
+    of date and has some (now fixed) bugs, but the basic functionality all works.</p>
+    <p>I am currently only maintaining this patchset for GHC 7.8, and
+    you can see the latest development version on my GitHub
+    <a href="https://github.com/ezyang/ghc/tree/ghc-7.8">ghc-7.8 branch</a>.</p>
 </div>
 <h2>FAQ</h2>
 <div class="cb">
