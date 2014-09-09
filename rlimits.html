@@ -34,10 +34,14 @@ Our system is implemented in GHC, a production-strength compiler for Haskell.</p
         <li><a href="rlimits/ghc-7.8.2~rlimits20140509-testsuite.tar.bz2">ghc-7.8.2~rlimits20140509-testsuite.tar.bz2</a>.  If you unpack this tarball on top of the above then you will be able to run the testsuite.</li>
         <li><a href="rlimits/ghc-7.8.2~rlimits20140509-windows-extra-src.tar.bz2">ghc-7.8.2~rlimits20140509-windows-extra-src.tar.bz2</a>.  This provides extra build tools which are a requirement for building on Windows. Simply unpack this tarball on top of the regular source distribution.  This tarball should be the same as <a href="https://www.haskell.org/ghc/dist/7.8.2/ghc-7.8.2-windows-extra-src.tar.bz2">the official distribution</a>.</li>
     </ul>
+    <p>You will probably also want the <a
+        href="https://github.com/ezyang/rlimits">rlimits</a> library,
+    which defines some useful libraries for handling resource limits.  You
+    will want to <code>cabal install --with-ghc=/path/to/ghc-rlimits/inplace/bin/ghc-stage2</code></p>
     <p>Known bugs:</p>
     <ul>
         <li>Does not work on 32-bit architectures</li>
-        <li>GHCi does not work</li>
+        <li>GHCi (and Template Haskell) do not work</li>
         <li>Compacting garbage collection does not work</li>
     </ul>
     <p>If you are interested in trying out our system with minimal
