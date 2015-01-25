@@ -36,20 +36,10 @@ non-strict purely functional language.</p>
 </td></tr>
 </table>
 
-<h2>What are my collaborators and I working on?</h2>
-<h3>Breaking barriers</h3>
-Abstraction is a fundamental tenet of software engineering, and it is often enforced through mechanisms such as information hiding.  For large software projects, such facilities are considered essential; for security abstractions, this enforcement is mandatory.  However, real software engineers repeatedly and profitably violate abstraction: languages that are too inflexible to allow such violations often force programmers to resort to solutions that are worse than the disease.  What is going on here? We want to find out.  Here are some <a href="https://github.com/ezyang/breaking-barriers">preliminary thoughts.</a>
-
-<h3>A method for adding IFC to existing programming languages</h3>
-Information-flow control is a promising discipline for enforcing the security of systems. Unfortunately, adding IFC often requires invasive changes to the semantics of the host language. We're working on a general method for adding coarse-grained IFC to a language, while requiring only minimal changes to our semantics.  Inspired by <a href="http://people.cs.uchicago.edu/~jacobm/papers/multilang/matthews-findler-popl07-bw.pdf">Matthews' and Findler's</a> work on multi-language semantics, our approach is to take a minimal IFC calculus and combine it with the target language to achieve an IFC-enabled language.  We hope to validate this approach by showing that the noninterference proof is parametric in the source of language, and that the resulting semantics accurately describe existing IFC systems.  Here is a <a href="http://web.mit.edu/~ezyang/Public/IFCInside.pdf">preprint on the topic</a>.
-
-<h3>The runtime system of a lazy, purely functional language</h3>
-GHC's runtime system is a complicated beast, its many lines of code spanning many different concerns.  How does parallelism and concurrency work?  How does the garbage collector work?  How is lazy evaluation implemented?  These are questions whose answers are scattered throughout the various literature that has come out of the GHC project over the years.  We're working on a journal paper which ties all of this literature together, with the hopes that it will be useful for other designers of runtime systems for functional languages (and perhaps non-functional ones too).  Here is <a href="http://web.mit.edu/~ezyang/Public/jfp-ghc-rts.pdf">a draft version of the paper</a>.
-
 <h2>Recent publications</h2>
 
 <ul class="papers">
-    <li>Deian Stefan, Edward Z. Yang, Petr Marchenko, Alejandro Russo, Dave Herman, Brad Karp, and David Mazières. <strong>Protecting Users by Confining JavaScript with COWL.</strong> In <em>Proceedings of 11th Symposium on Operating Systems Design and Implementation</em>. To appear.</li>
+    <li>Deian Stefan, Edward Z. Yang, Petr Marchenko, Alejandro Russo, Dave Herman, Brad Karp, and David Mazières. <strong>Protecting Users by Confining JavaScript with COWL.</strong> In <em>Proceedings of 11th Symposium on Operating Systems Design and Implementation</em>. October 2014.</li>
     <li>Edward Z. Yang, David Mazières. <strong><a href="rlimits.html">Dynamic Space Limits for Haskell</a></strong>. In <em>Proceedings of the 35th annual ACM SIGPLAN conference on Programming Language Design and Implementation</em>. June 2014.<br />
     [ <a href="papers/ezyang14-rlimits.pdf">paper</a> | <a href="papers/ezyang14-rlimits.bib">bibtex</a> | <a href="reviews/pldi14-rlimits.txt">reviews</a>/<a href="reviews/pldi14-rlimits-rebuttal.txt">rebuttal</a> (<a href="reviews/pldi14-aec-rlimits.txt">aec</a>, <a href="reviews/icfp13-rlimits.txt">icfp13</a>/<a href="reviews/icfp13-rlimits-rebuttal.txt">rebuttal</a>) | <a href="slides/ezyang14-rlimits-slides.pdf">slides</a> ]</li>
     <li>Deian Stefan, Pablo Buiras, Edward Z. Yang, Amit Levy, David Terei, Alejandro Russo and David Mazières.  <strong>Eliminating Cache-Based Timing Attacks with Instruction-Based Scheduling</strong>. In <em>Proceedings of the 18th European Symposium on Research in Computer Security (ESORICS 2013)</em>. September 2013.<br />
@@ -66,7 +56,7 @@ GHC's runtime system is a complicated beast, its many lines of code spanning man
 <ul>
     <li>I play the oboe and am a member of the <a href="http://sso.stanford.edu/">Stanford Symphony Orchestra</a>.  I quite like <a href="http://www.public.asu.edu/~schuring/Oboe/Reedguide.html">Martin Schuring's guide for reed adjustment</a>.</li>
     <li>I play contract bridge (find me on <a href="http://www.bridgebase.com/">BBO</a> as ezyang or at the <a href="http://studentlife42210.orgsync.com/org/stanfordbridgeclub">Stanford Bridge Club</a>).  Recently, with teammates Frank Lin, Ling-Ling Zhang and Erli Zhou, we <a href="http://www.acbl.org/news_archive.php?id=931">qualified for the 2014 Collegiate Championship</a>.</li>
-    <li>I'm currently learning how to <a href="http://socialdance.stanford.edu/">social dance</a>.</li>
+    <li>I am a regular at <a href="http://www.fridaynightwaltz.com/">Friday Night Waltz</a>; I also square dance with the <a href="http://www.stanfordquads.org/">Stanford Quads</a>.</li>
     <li>I help run the <a href="ringing.html">Bay Area Guild of Change Ringers</a>, where we do British change ringing on handbells.</li>
 </ul>
 
