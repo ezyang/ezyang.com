@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Efficient Communication and Collection with Compact Normal Forms</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="screen.css" media="screen,projection" />
+</head>
+<body>
+<div id="container">
+<h1 style="font-size:2.3rem">Efficient Communication and Collection with Compact Normal Forms</h1>
+<div id="paperinfo">
+<a href="papers/ezyang15-cnf.pdf">Paper (PDF)</a>
+</div>
+<div id="content">
+<div class="full">
+    <p><strong class="abstract">Abstract</strong>
+    In distributed applications, the transmission of non-contiguous data
+    structures is greatly slowed down by the need to serialize them into
+    a buffer before sending.  We describe Compact Normal Forms, an API that
+    allows programmers to explicitly place immutable heap objects into regions,
+    which can both be accessed like ordinary data as well as efficiently
+    transmitted over the network.  The process of placing objects into
+    compact regions (essentially a copy) is faster than any serializer
+    and can be amortized over a series of functional updates to the data
+    structure in question.  We implement this scheme in the Glasgow Haskell Compiler and show
+    that even with the space expansion attendant with memory-oriented
+    data structure representations, we achieve between ×2 and
+    ×4 speedups on fast local networks with sufficiently large
+    data structures.
+    </p>
+</div>
+<h2>Code</h2>
+<div class="cb">
+    <p>The most recent source distributions are available at
+    <a href="https://github.com/gcampax/ghc/releases">Giovanni Campagna's</a> GitHub
+    repository.</p>
+    <p>The base GHC distribution only exposes an interfaces for getting
+    raw pointers to compact regions.  A sample library for sending and receiving compacts over simple
+    sockets is on Hackage under the name <a href="https://hackage.haskell.org/package/compact-socket">compact-socket</a>; you can install it with <code>cabal install compact-socket --with-ghc=/path/to/compact/ghc</code></p>
+</div>
+<h2>Usage</h2>
+<div class="cb">
+    <p>Our distribution of GHC comes with a new core library <code>compact</code>
+    which contains the user-facing API for manipulating compact regions.  You
+    can view the <a href="compact/Data-Compact.html">API documentation</a>.  The
+    API documentation differs slightly from the paper in a few ways:</p>
+
+    <ol>
+        <li>Most functions are prefixed by <code>compact</code>,</li>
+        <li>There are variants of functions which preserve sharing and
+        which don't prefer sharing (most of the benchmarks in the paper
+        were done with the no-sharing variant, which is a bit faster),</li>
+        <li>We use the <code>NFData</code> type class rather than a new
+            <code>Serializable</code> type class, and error at runtime
+        if you attempt to serialize a data structure which is not
+        serializable, and</li>
+        <li>You need to specify some default block size for compact
+        regions.  The larger the block size, the more continuity you
+        have, but also the more space that is wasted.</li>
+    </ol>
+</div>
+</body>
+</html>
