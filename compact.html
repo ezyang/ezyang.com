@@ -59,5 +59,25 @@
         have, but also the more space that is wasted.</li>
     </ol>
 </div>
+<h2>Errata</h2>
+<div class="cb">
+    <p>At ICFP, we were informed of two relevant pieces of work which had
+    escaped our notice prior to the camera-ready.  We'd like to acknowledge
+    this work:</p>
+    <ul>
+        <li>Jost Berthold. <strong><a href="http://www.diku.dk/~berthold/papers/mainIFL10-withCopyright.pdf">Orthogonal Serialisation for Haskell</a></strong>.  In <em>Proceedings of the 22nd Symposium on Implementation and Application of Functional Languages</em>. 2011.  This paper describes
+        a method for serializing by directly using the information tables which are
+        available by the runtime system for garbage collection or other mechanisms.
+        This method does require serialization, but consequently does not require
+        virtual address tricks.  Their API supports serializing more types of objects than
+        we deal with in our paper; we rely on data being in normal form for our safety
+        guarantees.</li>
+        <li>Andrew Appel. <strong><a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.35.4846">A Runtime System</a></strong>. 1990.  In Section 17, "Structured writes and reads", Appel
+        describes a nice mechanism for piggy-backing off of garbage collection in order
+        to perform a copy to a "region" (in their case, a file).  However, in order to
+        be able to write forwarding pointers, they must stop-the-world; our system can
+        initialize multiple compact regions concurrently without inducing a GC.</li>
+    </ul>
+</div>
 </body>
 </html>
