@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>popo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="screen.css" media="screen,projection" type="text/css" />
+</head>
+<body>
+<div id="container" style="width:38em">
+<h1 style="font-size:2.8rem;" id="title">popo</h1>
+    <script>
+function getRandomColor() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+document.getElementById("title").style.color = getRandomColor();
+    </script>
+<div id="content" style="text-align:center">
+    <p>This is popo.  Say hello to popo!</p>
+    <div><img src="popo.png" alt="popo" /></div>
+</div>
+</div>
+</body>
+</html>
