@@ -18,7 +18,11 @@ function getRandomColor() {
     }
     return color;
 }
-document.getElementById("title").style.color = getRandomColor();
+function changeColor() {
+    document.getElementById("title").style.color = getRandomColor();
+    setTimeout(changeColor, 2000);
+}
+changeColor();
     </script>
 <div id="content" style="text-align:center">
     <p>This is popo.  Say hello to popo!</p>
