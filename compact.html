@@ -7,9 +7,12 @@
 </head>
 <body>
 <div id="container">
-<h1 style="font-size:2.3rem">Efficient Communication and Collection with Compact Normal Forms</h1>
+<h1 class="with-authors" style="font-size:2.3rem">Efficient Communication and Collection with Compact Normal Forms</h1>
+<div id="authors">
+Edward Z. Yang, Giovanni Campagna, Ömer Ağacan, Ahmed El-Hassany, Abhishek Kulkarni, Ryan Newton.
+</div>
 <div id="paperinfo">
-<a href="papers/ezyang15-cnf.pdf">Paper (PDF)</a>
+    <a href="papers/ezyang15-cnf.pdf">Paper (PDF)</a> ∙ <a href="slides/ezyang15-cnf-slides.pdf">Slides</a> ∙ <a href="https://downloads.haskell.org/~ghc/master/libraries/html/compact/index.html">Haddock</a>
 </div>
 <div id="content">
 <div class="full">
@@ -29,21 +32,17 @@
     data structures.
     </p>
 </div>
-<h2>Code</h2>
+<!--<h2>Code</h2>
 <div class="cb">
-    <p>The most recent source distributions are available at
-    <a href="https://github.com/gcampax/ghc/releases">Giovanni Campagna's</a> GitHub
-    repository.</p>
     <p>The base GHC distribution only exposes an interfaces for getting
     raw pointers to compact regions.  A sample library for sending and receiving compacts over simple
     sockets is on Hackage under the name <a href="https://hackage.haskell.org/package/compact-socket">compact-socket</a>; you can install it with <code>cabal install compact-socket --with-ghc=/path/to/compact/ghc</code></p>
-</div>
+</div>-->
 <h2>Usage</h2>
 <div class="cb">
-    <p>Our distribution of GHC comes with a new core library <code>compact</code>
-    which contains the user-facing API for manipulating compact regions.  You
-    can view the <a href="compact/Data-Compact.html">API documentation</a>.  The
-    API documentation differs slightly from the paper in a few ways:</p>
+    <p>Thanks to Simon Marlow, compact normal forms will be shipping
+    with GHC 8.2; see the <a href="https://downloads.haskell.org/~ghc/master/libraries/html/compact/index.html">Haddock</a> for the actual API we provide.
+    The API documentation differs slightly from the paper in a few ways:</p>
 
     <ol>
         <li>Most functions are prefixed by <code>compact</code>,</li>
@@ -54,7 +53,7 @@
             <code>Serializable</code> type class, and error at runtime
         if you attempt to serialize a data structure which is not
         serializable, and</li>
-        <li>You need to specify some default block size for compact
+        <li>You can specify a default block size for compact
         regions.  The larger the block size, the more continuity you
         have, but also the more space that is wasted.</li>
     </ol>

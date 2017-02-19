@@ -28,6 +28,8 @@ body {background-position:top left;background-attachment:fixed;
 h1{color:#1079ac;font-weight:normal;
   text-align:center; font-size:5rem;}
 h1 a {color:inherit;text-decoration:inherit;}
+.with-authors {margin-bottom:0;}
+#authors {margin-bottom:1em; text-align:center}
 
 #name {margin-bottom:0em;}
 #email {text-align:center;color:#000;position:relative;top:-1.5em;line-height:1;}
