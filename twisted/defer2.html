@@ -872,8 +872,10 @@ would only fire after some other number of Deferreds fired.</p>
 <pre class="python"><p class="py-linenumber">1
 2
 3
+4
 </p><span class="py-src-keyword">class</span> <span class="py-src-identifier">FireWhenAllFinish</span>(<span class="py-src-parameter">Deferred</span>):
     <span class="py-src-keyword">def</span> <span class="py-src-identifier">__init__</span>(<span class="py-src-parameter">self</span>, <span class="py-src-parameter">deferreds</span>):
+        super(FireWhenAllFinish, self).__init__()
         <span class="py-src-variable">self</span>.<span class="py-src-variable">deferreds</span> = <span class="py-src-variable">deferreds</span>
 </pre>
 
@@ -892,8 +894,10 @@ fires.  Recall that we need to setup callbacks in each Deferred in
  8
  9
 10
+11
 </p><span class="py-src-keyword">class</span> <span class="py-src-identifier">FireWhenAllFinish</span>(<span class="py-src-parameter">Deferred</span>):
     <span class="py-src-keyword">def</span> <span class="py-src-identifier">__init__</span>(<span class="py-src-parameter">self</span>, <span class="py-src-parameter">deferreds</span>):
+        super(FireWhenAllFinish, self).__init__()
         <span class="py-src-variable">self</span>.<span class="py-src-variable">deferreds</span> = <span class="py-src-variable">deferreds</span>
         <span class="py-src-keyword">for</span> <span class="py-src-variable">d</span> <span class="py-src-keyword">in</span> <span class="py-src-variable">self</span>.<span class="py-src-variable">deferreds</span>:
             <span class="py-src-variable">self</span>.<span class="py-src-variable">addCallbacks</span>(<span class="py-src-variable">self</span>.<span class="py-src-variable">_cbDeferred</span>, <span class="py-src-variable">self</span>.<span class="py-src-variable">_ebDeferred</span>)
@@ -927,8 +931,10 @@ the veil), a relatively simple implementation comes to mind:</p>
 14
 15
 16
+17
 </p><span class="py-src-keyword">class</span> <span class="py-src-identifier">FireWhenAllFinish</span>(<span class="py-src-parameter">Deferred</span>):
     <span class="py-src-keyword">def</span> <span class="py-src-identifier">__init__</span>(<span class="py-src-parameter">self</span>, <span class="py-src-parameter">deferreds</span>):
+        super(FireWhenAllFinish, self).__init__()
         <span class="py-src-variable">self</span>.<span class="py-src-variable">deferreds</span> = <span class="py-src-variable">deferreds</span>
         <span class="py-src-variable">self</span>.<span class="py-src-variable">finishedCount</span> = <span class="py-src-number">0</span>
         <span class="py-src-keyword">if</span> <span class="py-src-keyword">not</span> <span class="py-src-variable">self</span>.<span class="py-src-variable">deferreds</span>:

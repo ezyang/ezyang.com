@@ -811,6 +811,7 @@ would only fire after some other number of Deferreds fired.</p>
 <pre class="python">
 class FireWhenAllFinish(Deferred):
     def __init__(self, deferreds):
+        super(FireWhenAllFinish, self).__init__()
         self.deferreds = deferreds
 </pre>
 
@@ -822,6 +823,7 @@ fires.  Recall that we need to setup callbacks in each Deferred in
 <pre class="python">
 class FireWhenAllFinish(Deferred):
     def __init__(self, deferreds):
+        super(FireWhenAllFinish, self).__init__()
         self.deferreds = deferreds
         for d in self.deferreds:
             self.addCallbacks(self._cbDeferred, self._ebDeferred)
@@ -842,6 +844,7 @@ the veil), a relatively simple implementation comes to mind:</p>
 <pre class="python">
 class FireWhenAllFinish(Deferred):
     def __init__(self, deferreds):
+        super(FireWhenAllFinish, self).__init__()
         self.deferreds = deferreds
         self.finishedCount = 0
         if not self.deferreds:
